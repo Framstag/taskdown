@@ -37,7 +37,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
 
         attributes = attributes.withHashes(hash)
 
-        val task = database.createTask(Task(null,title,attributes))
+        val task = database.createTask(Task("",title,attributes))
 
         println(task.toFormattedString())
     }

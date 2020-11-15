@@ -4,6 +4,7 @@ import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.jvm.Throws
 
 const val ATTRIBUTE_SECTION_TASK = "## Task"
 const val ATTRIBUTE_SECTION_TASK_PROPERTIES = "### Properties"
@@ -156,7 +157,7 @@ private fun textBlockToTask(textBlock: TextBlock, handlerMap: Map<String, Attrib
     val title = headerToTitle(textBlock.header)
     val attributes = taskSectionToTaskAttributes(textBlock.filename, textBlock.taskDescription, handlerMap)
 
-    return Task(textBlock.filename, title, attributes)
+    return Task(textBlock.filename.fileName.toString(), title, attributes)
 }
 
 private fun updateTextBlock(
@@ -174,14 +175,32 @@ class Database(
     private val archiveDir: Path,
     private val handlerMap: Map<String, AttributeFileHandler>
 ) {
-    fun getPath(): Path {
-        return databaseDir
+    @Throws(NoValidDirectoryException::class)
+    fun validateDirectory(path : Path) {
+        val file = path.toFile()
+
+        if (!file.exists()) {
+            throw NoValidDirectoryException(path,"Does not exist")
+        }
+
+
+        if (!file.isDirectory) {
+            throw NoValidDirectoryException(path,"Is not a directory")
+        }
+
+        if (!file.canRead()) {
+            throw NoValidDirectoryException(path,"Directory is not readable")
+        }
+
+        if (!file.canWrite()) {
+            throw NoValidDirectoryException(path,"Directory is not writeable")
+        }
     }
 
-    fun isValid(): Boolean {
-        val file = databaseDir.toFile()
-
-        return file.exists() && file.isDirectory && file.canRead() && file.canWrite()
+    @Throws(NoValidDirectoryException::class)
+    fun validate() {
+        validateDirectory(databaseDir)
+        validateDirectory(archiveDir)
     }
 
     private fun copyFile(from : Path, to : Path) {
@@ -212,12 +231,13 @@ class Database(
     }
 
     fun createTask(task : Task):Task {
-        val filename = getPathForActiveTask(task)
+        val filename = getFilenameForActiveTask(task)
+        val path = databaseDir.resolve(filename)
 
         val taskOnDisk = task.withFilename(filename)
 
         Result.runCatching {
-            TextBlock(filename)
+            TextBlock(path)
         }.mapCatching {
             updateTextBlock(it, task, handlerMap)
         }.mapCatching {
@@ -230,32 +250,27 @@ class Database(
     }
 
     fun backupTask(task : Task) {
-        val filename = task.filename?.fileName.toString();
-
+        val filename = task.filename
+        val databaseFilePath = databaseDir.resolve(filename)
         val postfixStart = filename.lastIndexOf('.')
 
         if (postfixStart>=0) {
             val backupFilename=filename.replaceRange(postfixStart,filename.length,".bak")
             val backupFilePath= databaseDir.resolve(backupFilename)
 
-            copyFile(task.filename!!,backupFilePath)
+            copyFile(databaseFilePath,backupFilePath)
         }
     }
 
     fun updateTask(task : Task):Task {
-        assert (task.filename != null)
+        val databaseFilePath = databaseDir.resolve(task.filename)
 
-        // TODO: Use some else than assert + check
-        if (task.filename == null) {
-            throw AssertionError()
-        }
-
-        if (Files.notExists(task.filename)) {
-            throw FileDoesNotExistException(task.filename)
+        if (Files.notExists(databaseFilePath)) {
+            throw FileDoesNotExistException(databaseFilePath)
         }
 
         Result.runCatching {
-            loadFromFilenameToFileContent(task.filename)
+            loadFromFilenameToFileContent(databaseFilePath)
         }.mapCatching {
             fileContentToTextBlock(it)
         }.mapCatching {
@@ -269,16 +284,27 @@ class Database(
         return task
     }
 
-    fun deleteTask(filename : Path) {
-        Files.delete(filename)
+    fun deleteTask(task : Task) {
+        val databaseFilePath = databaseDir.resolve(task.filename)
+
+        // TODO: Delete possible backup, too
+        Files.delete(databaseFilePath)
     }
 
     fun archiveTask(task : Task) {
-        val archiveFilename= archiveDir.resolve(task.filename!!.fileName)
+        val databaseFilePath = databaseDir.resolve(task.filename)
+        val archiveFilePath= archiveDir.resolve(task.filename)
 
-        copyFile(task.filename,archiveFilename)
+        copyFile(databaseFilePath,archiveFilePath)
 
-        Files.delete(task.filename)
+        Files.delete(databaseFilePath)
+    }
+
+    fun loadTaskContent(task : Task):String {
+        val databaseFilePath = databaseDir.resolve(task.filename)
+        val fileContent = loadFromFilenameToFileContent(databaseFilePath)
+
+        return fileContent.content
     }
 
     fun loadTasks(): List<Task> {
@@ -292,7 +318,7 @@ class Database(
 
         val (successResults, failureResults)= fileNames.map {
             Result.runCatching {
-                loadTask(Path.of(databaseDir.toString(),it))
+                loadTask(databaseDir.resolve(it))
             }
         }.partition {
             it.isSuccess
@@ -305,9 +331,13 @@ class Database(
         }
     }
 
-    private fun getPathForActiveTask(task : Task):Path {
-        val filename = "${task.attributes.id} "+task.title.replace(" ","_")+".md"
+    private fun getFilenameForActiveTask(task : Task):String {
+        val format = "%03d_%s.md"
 
-        return Path.of(databaseDir.toString(),filename)
+        var title = task.title.replace(" ","_")
+
+        title = title.substring(0, if (title.length>20) 20 else title.length)
+
+        return format.format(task.attributes.id,title)
     }
 }

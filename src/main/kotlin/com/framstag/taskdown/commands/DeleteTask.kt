@@ -24,7 +24,7 @@ class DeleteTask : CliktCommand(name="delete", help="Delete an existing task") {
                 return
             }
 
-            database.deleteTask(task.filename!!)
+            database.deleteTask(task)
         }
     }
 }

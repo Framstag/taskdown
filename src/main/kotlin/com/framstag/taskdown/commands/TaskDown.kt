@@ -3,6 +3,7 @@ package com.framstag.taskdown.commands
 import com.framstag.taskdown.config.getConfigPath
 import com.framstag.taskdown.config.loadConfig
 import com.framstag.taskdown.database.Database
+import com.framstag.taskdown.database.NoValidDirectoryException
 import com.framstag.taskdown.database.filehandler.fileHandlerMap
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.ProgramResult
@@ -21,9 +22,11 @@ class TaskDown : CliktCommand() {
     }
 
     override fun run() {
-        // TODO: More detailed error messages
-        if (!database.isValid()) {
-            System.err.println("ERROR: database directory '${database.getPath()}'not valid")
+        try {
+            database.validate()
+        }
+        catch (e : NoValidDirectoryException) {
+            System.err.println("ERROR: ${e.message}")
 
             throw ProgramResult(1)
         }

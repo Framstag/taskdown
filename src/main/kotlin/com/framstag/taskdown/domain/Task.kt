@@ -1,15 +1,13 @@
 package com.framstag.taskdown.domain
 
 import com.github.ajalt.mordant.TermColors
-import java.nio.file.Path
 
-
-data class Task(val filename: Path?, val title : String, val attributes : TaskAttributes) {
+data class Task(val filename: String, val title : String, val attributes : TaskAttributes) {
     fun withTitle(title : String):Task {
         return this.copy(title = title)
     }
 
-    fun withFilename(filename : Path):Task {
+    fun withFilename(filename : String):Task {
         return this.copy(filename = filename)
     }
 

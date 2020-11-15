@@ -15,7 +15,9 @@ class ShowTask : CliktCommand(name="show", help="show an existing task") {
     private val database by requireObject<Database>()
 
     private fun showTask(task : Task) {
-        println(Files.readString(task.filename))
+        val content = database.loadTaskContent(task)
+
+        println(content)
     }
 
     override fun run() {
