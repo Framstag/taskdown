@@ -12,15 +12,15 @@ import com.github.ajalt.clikt.parameters.types.choice
 class ListTasks : CliktCommand(name="list", help="List existing tasks") {
     private val database by requireObject<Database>()
 
-    private val hash by option().multiple().unique()
+    private val tag by option().multiple().unique()
     private val priority by option().choice("A","B","C").multiple().unique()
 
     override fun run() {
         var tasks = database.loadTasks()
 
-        hash.forEach { hash ->
+        tag.forEach { tag ->
            tasks = tasks.filter {task ->
-               task.attributes.hashes.contains(hash)
+               task.attributes.tags.contains(tag)
            }
         }
 

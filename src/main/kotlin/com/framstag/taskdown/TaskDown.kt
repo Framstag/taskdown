@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
             AddTask(),
             ArchiveTask(),
             DeleteTask(),
-            ShowHashes(),
+            ShowTags(),
             ListTasks(),
             ShowTask(),
             UpdateTask(),

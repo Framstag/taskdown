@@ -1,20 +1,20 @@
 package com.framstag.taskdown.domain
 
-data class TaskAttributes(val id: Int, val priority: Priority = Priority.C, val hashes : Set<String> = setOf()) {
+data class TaskAttributes(val id: Int, val priority: Priority = Priority.C, val tags : Set<String> = setOf()) {
 
     fun withPriority(priority : Priority):TaskAttributes {
         return this.copy(priority = priority)
     }
 
-    fun withHashes(hashes : Set<String>):TaskAttributes {
-        return this.copy(hashes = hashes)
+    fun withTags(tags : Set<String>):TaskAttributes {
+        return this.copy(tags = tags)
     }
 
-    fun withHash(hash : String):TaskAttributes {
-        return this.copy(hashes = hashes.plus(hash))
+    fun withTag(tag : String):TaskAttributes {
+        return this.copy(tags = tags.plus(tag))
     }
 
-    fun withoutHash(hash : String):TaskAttributes {
-        return this.copy(hashes = hashes.minus(hash))
+    fun withoutTag(tag : String):TaskAttributes {
+        return this.copy(tags = tags.minus(tag))
     }
 }

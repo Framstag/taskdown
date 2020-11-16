@@ -17,7 +17,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
 
     // Options
     private val priority by option().choice("A", "B", "C")
-    private val hash by option().multiple().unique()
+    private val tag by option().multiple().unique()
 
     // Arguments
     private val title by argument(help = "Task title")
@@ -35,7 +35,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
             attributes = attributes.withPriority(parsedPriority)
         }
 
-        attributes = attributes.withHashes(hash)
+        attributes = attributes.withTags(tag)
 
         val task = database.createTask(Task("",title,attributes))
 

@@ -15,9 +15,9 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
         return this.copy(attributes = attributes)
     }
 
-    private fun getHashString(hashes : Set<String>):String {
-        return if (hashes.isNotEmpty()) {
-            hashes.joinToString(" ", "[", "]") {
+    private fun getTagString(tags : Set<String>):String {
+        return if (tags.isNotEmpty()) {
+            tags.joinToString(" ", "[", "]") {
                 "#$it"
             }
         } else {
@@ -26,7 +26,7 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
     }
 
     fun toFormattedString():String {
-        val formattedText = FORMAT.format(attributes.id, attributes.priority, title, getHashString(attributes.hashes))
+        val formattedText = FORMAT.format(attributes.id, attributes.priority, title, getTagString(attributes.tags))
         val t = TermColors()
 
         return when (attributes.priority) {

@@ -16,7 +16,7 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     // Options
     private val title by option()
     private val priority by option().choice("A", "B", "C")
-    private val hash by option().multiple().unique()
+    private val tag by option().multiple().unique()
 
     // Arguments
     val id : Int by argument(help="Id of the task").int()
@@ -36,13 +36,13 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
             updatedTask = updatedTask.withAttributes(updatedTask.attributes.withPriority(parsedPriority))
         }
 
-        hash.forEach {
+        tag.forEach {
             updatedTask = if (it=="-") {
-                updatedTask.withAttributes(updatedTask.attributes.withHashes(setOf()))
+                updatedTask.withAttributes(updatedTask.attributes.withTags(setOf()))
             } else if (it.isNotEmpty() && it[0]=='-') {
-                updatedTask.withAttributes(updatedTask.attributes.withoutHash(it.substring(1)))
+                updatedTask.withAttributes(updatedTask.attributes.withoutTag(it.substring(1)))
             } else {
-                updatedTask.withAttributes(updatedTask.attributes.withHash(it))
+                updatedTask.withAttributes(updatedTask.attributes.withTag(it))
             }
         }
 
