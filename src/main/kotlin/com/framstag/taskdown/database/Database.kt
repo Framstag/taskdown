@@ -4,6 +4,7 @@ import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 import kotlin.jvm.Throws
 
 const val ATTRIBUTE_SECTION_TASK = "## Task"
@@ -293,7 +294,7 @@ class Database(
 
     fun archiveTask(task : Task) {
         val databaseFilePath = databaseDir.resolve(task.filename)
-        val archiveFilePath= archiveDir.resolve(task.filename)
+        val archiveFilePath= archiveDir.resolve(getFilenameForArchiveTask(task))
 
         copyFile(databaseFilePath,archiveFilePath)
 
@@ -332,12 +333,17 @@ class Database(
     }
 
     private fun getFilenameForActiveTask(task : Task):String {
-        val format = "%03d_%s.md"
-
+        val format = "%03d_%.20s.md"
         var title = task.title.replace(" ","_")
 
-        title = title.substring(0, if (title.length>20) 20 else title.length)
-
         return format.format(task.attributes.id,title)
+    }
+
+    private fun getFilenameForArchiveTask(task : Task):String {
+        val format = "%tY%tm%td_%.20s.md"
+        val now= Calendar.getInstance()
+        val title = task.title.replace(" ","_")
+
+        return format.format(now,now,now,title)
     }
 }
