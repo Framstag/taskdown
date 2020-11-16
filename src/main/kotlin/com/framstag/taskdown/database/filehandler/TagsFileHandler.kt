@@ -12,11 +12,11 @@ class HashesFileHandler : AttributeFileHandler {
             it.isNotEmpty()
         }.toSet()
 
-        return current.withHashes(hashes)
+        return current.withTags(hashes)
     }
 
     override fun attributeToKeyValue(current: TaskAttributes): Pair<String,String> {
-        val hashString= current.hashes.joinToString(" ") {
+        val hashString= current.tags.joinToString(" ") {
             "#$it"
         }
 
