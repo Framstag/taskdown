@@ -301,11 +301,21 @@ class Database(
         Files.delete(databaseFilePath)
     }
 
+    fun reloadTask(task : Task):Task {
+        val databaseFilePath = databaseDir.resolve(task.filename)
+
+        return loadTask(databaseFilePath)
+    }
+
     fun loadTaskContent(task : Task):String {
         val databaseFilePath = databaseDir.resolve(task.filename)
         val fileContent = loadFromFilenameToFileContent(databaseFilePath)
 
         return fileContent.content
+    }
+
+    fun getPathForActiveTask(task : Task):Path {
+        return databaseDir.resolve(task.filename)
     }
 
     fun loadTasks(): List<Task> {
