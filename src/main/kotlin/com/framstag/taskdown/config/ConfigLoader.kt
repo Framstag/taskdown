@@ -7,6 +7,7 @@ import java.nio.file.Path
 fun getConfigPath(): Path {
     return when (System.getProperty("os.name")) {
         "Linux" -> Path.of(System.getProperty("user.home"), ".config", "taskdown.json")
+        "Windows 10" -> Path.of(System.getProperty("user.home"), "taskdown.json")
         else -> Path.of("taskdown.json")
     }
 }
