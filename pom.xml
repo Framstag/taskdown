@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>klaxon</artifactId>
-            <version>5.0.1</version>
+            <version>5.4</version>
         </dependency>
 
         <!-- Test -->
