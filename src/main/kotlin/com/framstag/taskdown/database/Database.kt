@@ -20,7 +20,7 @@ var ATTRIBUTE_SECTION_TASK_START =
     |Key     |Value|
     |--------|-----|
     
-    """.trimIndent()
+    """.trimIndent().replace("\n", System.lineSeparator())
 
 private fun loadFromFilenameToFileContent(filename: Path): FileContent {
     return FileContent(filename, Files.readString(filename))
@@ -121,12 +121,13 @@ private fun taskSectionToTaskAttributes(
     }
 
     // Table header
-    var tableRowStart = section.indexOf(System.lineSeparator(),tableStart+1)
+    var tableRowStart = section.indexOf(System.lineSeparator(),tableStart)
 
     // Table header divider
-    tableRowStart = section.indexOf(System.lineSeparator(),tableRowStart+1)
+    tableRowStart = section.indexOf(System.lineSeparator(),tableRowStart+System.lineSeparator().length)
+
     // Start of first value row
-    tableRowStart = section.indexOf("|", tableRowStart+1)
+    tableRowStart = section.indexOf("|", tableRowStart+System.lineSeparator().length)
 
     while (tableRowStart >= 0) {
         val column1Start = tableRowStart
@@ -344,7 +345,7 @@ class Database(
 
     private fun getFilenameForActiveTask(task : Task):String {
         val format = "%03d_%.20s.md"
-        var title = task.title.replace(" ","_")
+        val title = task.title.replace(" ","_")
 
         return format.format(task.attributes.id,title)
     }
