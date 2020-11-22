@@ -1,4 +1,4 @@
-package com.framstag.taskdown.database
+package com.framstag.taskdown.markdown
 
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path

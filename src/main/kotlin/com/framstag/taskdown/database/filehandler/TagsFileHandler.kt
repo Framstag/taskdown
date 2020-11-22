@@ -1,6 +1,6 @@
 package com.framstag.taskdown.database.filehandler
 
-import com.framstag.taskdown.database.AttributeFileHandler
+import com.framstag.taskdown.markdown.AttributeFileHandler
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
