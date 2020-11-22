@@ -1,0 +1,9 @@
+# Idea
+.idea
+*.iml
+
+# Maven
+target
+
+# Default build setup with directory-local database
+database
