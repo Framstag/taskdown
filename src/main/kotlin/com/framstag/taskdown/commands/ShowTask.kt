@@ -6,7 +6,6 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
-import java.nio.file.Files
 
 class ShowTask : CliktCommand(name="show", help="show an existing task") {
     // Arguments
