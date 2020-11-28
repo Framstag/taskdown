@@ -7,6 +7,7 @@ import com.framstag.taskdown.domain.TaskAttributes
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
@@ -16,8 +17,8 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val database by requireObject<Database>()
 
     // Options
-    private val priority by option().choice("A", "B", "C")
-    private val tag by option().multiple().unique()
+    private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C").default("C")
+    private val tag by option(help="List of tags to assign to the task").multiple().unique()
 
     // Arguments
     private val title by argument(help = "Task title")
@@ -29,11 +30,9 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
 
         var attributes = TaskAttributes(taskId)
 
-        if (priority != null) {
-            val parsedPriority = Priority.valueOf(priority!!)
+        val parsedPriority = Priority.valueOf(priority)
 
-            attributes = attributes.withPriority(parsedPriority)
-        }
+        attributes = attributes.withPriority(parsedPriority)
 
         attributes = attributes.withTags(tag)
 
