@@ -12,8 +12,8 @@ import com.github.ajalt.clikt.parameters.types.choice
 class ListTasks : CliktCommand(name="list", help="List existing tasks") {
     private val database by requireObject<Database>()
 
-    private val tag by option().multiple().unique()
-    private val priority by option().choice("A","B","C").multiple().unique()
+    private val tag by option(help= "Tags to filter the tasks").multiple().unique()
+    private val priority by option(help="Priority to filter the tasks").choice("A","B","C").multiple().unique()
 
     override fun run() {
         var tasks = database.loadTasks()
