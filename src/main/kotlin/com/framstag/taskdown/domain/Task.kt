@@ -16,28 +16,39 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
     }
 
     private fun getTagString(tags : Set<String>):String {
-        return if (tags.isNotEmpty()) {
-            tags.joinToString(" ", "[", "]") {
-                "#$it"
-            }
-        } else {
-            ""
+        return tags.joinToString(" ") {
+            "#$it"
         }
     }
 
     fun toFormattedString():String {
-        val formattedText = FORMAT.format(attributes.id, attributes.priority, title, getTagString(attributes.tags))
         val t = TermColors()
 
-        return when (attributes.priority) {
-            Priority.A -> t.bold(t.red(formattedText))
-            Priority.B -> t.yellow(formattedText)
-            else -> formattedText
+        val idString = t.bold(ID_FORMAT.format(attributes.id))
+        val priorityString = PRIORITY_FORMAT.format(attributes.priority)
+        val titleString = TITLE_FORMAT.format(title)
+        val tagString = t.gray(TAG_FORMAT.format(getTagString(attributes.tags)))
+
+        val coloredPriorityString = when (attributes.priority) {
+            Priority.A -> t.bold(t.red(priorityString))
+            Priority.B -> t.yellow(priorityString)
+            else -> priorityString
         }
+
+        val coloredTitleString = when (attributes.priority) {
+            Priority.A -> t.bold(t.red(titleString))
+            Priority.B -> t.yellow(titleString)
+            else -> titleString
+        }
+
+        return "$idString $coloredPriorityString $coloredTitleString $tagString"
     }
 
     companion object {
-        const val FORMAT = "%3d %1s %s %s"
+        const val ID_FORMAT="%3d"
+        const val PRIORITY_FORMAT = "%1s"
+        const val TITLE_FORMAT = "%-30s"
+        const val TAG_FORMAT = "%s"
 
         fun getNextFreeTaskId(tasks : List<Task>):Int {
             val idMap = tasks.associateBy { it.attributes.id }
