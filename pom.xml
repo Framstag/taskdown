@@ -15,7 +15,7 @@
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.20</kotlin.version>
 
         <junit.jupiter.version>5.7.0</junit.jupiter.version>
     </properties>
@@ -40,8 +40,8 @@
 
         <dependency>
             <groupId>io.github.microutils</groupId>
-            <artifactId>kotlin-logging</artifactId>
-            <version>1.6.10</version>
+            <artifactId>kotlin-logging-jvm</artifactId>
+            <version>2.0.3</version>
         </dependency>
 
         <dependency>
