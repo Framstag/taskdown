@@ -6,6 +6,7 @@ import com.framstag.taskdown.domain.Task
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
@@ -14,9 +15,9 @@ import com.github.ajalt.clikt.parameters.types.int
 
 class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     // Options
-    private val title by option()
-    private val priority by option().choice("A", "B", "C")
-    private val tag by option().multiple().unique()
+    private val title by option(help ="Title of the task")
+    private val priority by option(help = "Priority of the task, either 'A', 'B' or (default) 'C'").choice("A", "B", "C").default("C")
+    private val tag by option(help="List of tags to assign to the task").multiple().unique()
 
     // Arguments
     val id : Int by argument(help="Id of the task").int()
@@ -30,11 +31,9 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
             updatedTask = task.withTitle(title!!)
         }
 
-        priority?.let {
-            val parsedPriority = Priority.valueOf(it)
+        val parsedPriority = Priority.valueOf(priority)
 
-            updatedTask = updatedTask.withAttributes(updatedTask.attributes.withPriority(parsedPriority))
-        }
+        updatedTask = updatedTask.withAttributes(updatedTask.attributes.withPriority(parsedPriority))
 
         tag.forEach {
             updatedTask = if (it=="-") {
