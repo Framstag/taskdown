@@ -10,8 +10,7 @@ import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.findOrSetObject
 import java.nio.file.Path
 
-class TaskDown : CliktCommand() {
-
+class TaskDown : CliktCommand(name = "taskdown") {
     private val config by findOrSetObject { loadConfig(getConfigPath()) }
     private val database by findOrSetObject {
         Database(
@@ -21,11 +20,23 @@ class TaskDown : CliktCommand() {
         )
     }
 
+    override fun aliases(): Map<String, List<String>> {
+        return mapOf(
+            "a" to listOf("add"),
+            "e" to listOf("edit"),
+            "l" to listOf("list"),
+            "rm" to listOf("delete"),
+            "s" to listOf("show"),
+            "t" to listOf("tags"),
+            "u" to listOf("update"),
+            "help" to listOf("","-h")
+        )
+    }
+
     override fun run() {
         try {
             database.validate()
-        }
-        catch (e : NoValidDirectoryException) {
+        } catch (e: NoValidDirectoryException) {
             System.err.println("ERROR: ${e.message}")
 
             throw ProgramResult(1)
