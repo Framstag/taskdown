@@ -7,3 +7,4 @@ target
 
 # Default build setup with directory-local database
 database
+archive
