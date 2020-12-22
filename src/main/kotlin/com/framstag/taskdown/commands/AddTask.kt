@@ -12,6 +12,7 @@ import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
 import com.github.ajalt.clikt.parameters.types.choice
+import java.time.LocalDate
 
 class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val database by requireObject<Database>()
@@ -33,8 +34,8 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         val parsedPriority = Priority.valueOf(priority)
 
         attributes = attributes.withPriority(parsedPriority)
-
         attributes = attributes.withTags(tag)
+        attributes = attributes.withCreationDate(LocalDate.now())
 
         val task = database.createTask(Task("",title,attributes))
 

@@ -1,7 +1,9 @@
 package com.framstag.taskdown.commands
 
 import com.framstag.taskdown.database.Database
-import com.framstag.taskdown.domain.Task
+import com.framstag.taskdown.domain.TaskByAgeComparator
+import com.framstag.taskdown.domain.TaskByIdComparator
+import com.framstag.taskdown.domain.TaskByPriorityComparator
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.multiple
@@ -9,19 +11,19 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
 import com.github.ajalt.clikt.parameters.types.choice
 
-class ListTasks : CliktCommand(name="list", help="List existing tasks") {
+class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
     private val database by requireObject<Database>()
 
-    private val tag by option(help= "Tags to filter the tasks").multiple().unique()
-    private val priority by option(help="Priority to filter the tasks").choice("A","B","C").multiple().unique()
+    private val tag by option(help = "Tags to filter the tasks").multiple().unique()
+    private val priority by option(help = "Priority to filter the tasks").choice("A", "B", "C").multiple().unique()
 
     override fun run() {
         var tasks = database.loadTasks()
 
         tag.forEach { tag ->
-           tasks = tasks.filter {task ->
-               task.attributes.tags.contains(tag)
-           }
+            tasks = tasks.filter { task ->
+                task.attributes.tags.contains(tag)
+            }
         }
 
         if (priority.isNotEmpty()) {
@@ -30,13 +32,13 @@ class ListTasks : CliktCommand(name="list", help="List existing tasks") {
             }
         }
 
-        tasks = tasks.sortedWith(compareBy<Task> {
-            it.attributes.priority
-        }.thenBy {
-            it.attributes.id
-        })
+        tasks = tasks.sortedWith(
+            TaskByPriorityComparator()
+                .then(TaskByAgeComparator())
+                .then(TaskByIdComparator())
+        )
 
-        tasks.forEach {task ->
+        tasks.forEach { task ->
             println(task.toFormattedString())
         }
     }
