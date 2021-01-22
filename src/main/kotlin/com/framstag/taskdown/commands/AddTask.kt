@@ -37,7 +37,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         attributes = attributes.withTags(tag)
         attributes = attributes.withCreationDate(LocalDate.now())
 
-        val task = database.createTask(Task("",title,attributes))
+        val task = database.createTask(Task("",title,attributes,""))
 
         println(task.toFormattedString())
     }

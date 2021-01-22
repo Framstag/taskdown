@@ -25,7 +25,7 @@ class TaskByIdComparator : Comparator<Task> {
     }
 }
 
-data class Task(val filename: String, val title : String, val attributes : TaskAttributes) {
+data class Task(val filename: String, val title : String, val attributes : TaskAttributes, val body : String) {
     fun withTitle(title : String):Task {
         return this.copy(title = title)
     }
@@ -36,12 +36,6 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
 
     fun withAttributes(attributes : TaskAttributes):Task {
         return this.copy(attributes = attributes)
-    }
-
-    private fun getTagString(tags : Set<String>):String {
-        return tags.joinToString(" ") {
-            "#$it"
-        }
     }
 
     fun toFormattedString():String {
@@ -58,7 +52,7 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
         val priorityString = PRIORITY_FORMAT.format(attributes.priority)
         val creationDateString = CREATION_DATE_FORMAT.format(creationDays)
         val titleString = TITLE_FORMAT.format(title)
-        val tagString = t.gray(TAG_FORMAT.format(getTagString(attributes.tags)))
+        val tagString = t.gray(TAG_FORMAT.format(attributes.tagString()))
 
         val coloredPriorityString = when (attributes.priority) {
             Priority.A -> t.bold(t.red(priorityString))

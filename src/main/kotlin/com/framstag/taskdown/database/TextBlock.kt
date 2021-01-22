@@ -2,10 +2,10 @@ package com.framstag.taskdown.database
 
 import java.nio.file.Path
 
-data class TextBlock(val filename : Path, val header : String="", val taskDescription : String="", val footer : String="") {
+data class TextBlock(val filename : Path, val title : String="", val taskDescription : String="", val body : String="") {
 
     fun withHeader(header : String):TextBlock {
-        return this.copy(header = header)
+        return this.copy(title = header)
     }
 
     fun withTaskDescription(taskDescription: String):TextBlock {

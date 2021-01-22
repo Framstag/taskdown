@@ -28,4 +28,10 @@ data class TaskAttributes(
     fun withCreationDate(creationDate: LocalDate): TaskAttributes {
         return this.copy(creationDate = creationDate)
     }
+
+    fun tagString():String {
+        return tags.joinToString(" ") {
+            "#$it"
+        }
+    }
 }

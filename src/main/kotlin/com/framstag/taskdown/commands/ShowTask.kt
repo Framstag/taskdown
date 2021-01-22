@@ -6,6 +6,9 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.mordant.TermColors
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class ShowTask : CliktCommand(name="show", help="show an existing task") {
     // Arguments
@@ -14,9 +17,20 @@ class ShowTask : CliktCommand(name="show", help="show an existing task") {
     private val database by requireObject<Database>()
 
     private fun showTask(task : Task) {
-        val content = database.loadTaskContent(task)
+        val t = TermColors()
 
-        println(content)
+        println(t.red(t.bold("# ${task.title}")))
+        println()
+        println("Id:       ${t.yellow(task.attributes.id.toString())}")
+        println("Priority: ${t.yellow(task.attributes.priority.toString())}")
+
+        if (task.attributes.creationDate!=null) {
+            println("Creation: ${t.yellow(task.attributes.creationDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
+        }
+
+        println("Tags:     ${t.yellow(task.attributes.tagString())}")
+        println()
+        println(task.body)
     }
 
     override fun run() {

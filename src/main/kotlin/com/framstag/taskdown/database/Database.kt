@@ -18,7 +18,7 @@ private fun storeFromFileContentToFile(fileContent : FileContent) {
 private fun texBlockToContent(textBlock: TextBlock): FileContent {
     return FileContent(
         textBlock.filename,
-        textBlock.header + textBlock.taskDescription + textBlock.footer
+        textBlock.title + textBlock.taskDescription + textBlock.body
     )
 }
 
@@ -27,10 +27,10 @@ private fun headerToTitle(header: String): String {
 }
 
 private fun textBlockToTask(textBlock: TextBlock, handlerMap: Map<String, AttributeFileHandler>): Task {
-    val title = headerToTitle(textBlock.header)
+    val title = headerToTitle(textBlock.title)
     val attributes = taskSectionToTaskAttributes(textBlock.filename, textBlock.taskDescription, handlerMap)
 
-    return Task(textBlock.filename.fileName.toString(), title, attributes)
+    return Task(textBlock.filename.fileName.toString(), title, attributes,textBlock.body)
 }
 
 private fun updateTextBlock(
