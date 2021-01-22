@@ -8,3 +8,9 @@ target
 # Default build setup with directory-local database
 database
 archive
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
