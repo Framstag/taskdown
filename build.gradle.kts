@@ -42,10 +42,19 @@ dependencies {
     // Kotlin JUnit Tests
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // JUnit 5
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
 
+tasks.test {
+    useJUnitPlatform()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
 application {
     mainClass.set("com.framstag.taskdown.TaskDownKt")
 }

@@ -72,7 +72,7 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
     companion object {
         const val ID_FORMAT="%3d"
         const val PRIORITY_FORMAT = "%1s"
-        const val TITLE_FORMAT = "%-30s"
+        const val TITLE_FORMAT = "%-40s"
         const val TAG_FORMAT = "%s"
         const val CREATION_DATE_FORMAT ="%3d"
 

@@ -2,6 +2,7 @@ package com.framstag.taskdown.database
 
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.markdown.*
+import com.framstag.taskdown.system.filterFilenameCharacters
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -179,13 +180,6 @@ class Database(
         return loadTask(databaseFilePath)
     }
 
-    fun loadTaskContent(task : Task):String {
-        val databaseFilePath = databaseDir.resolve(task.filename)
-        val fileContent = loadFromFilenameToFileContent(databaseFilePath)
-
-        return fileContent.content
-    }
-
     fun getPathForActiveTask(task : Task):Path {
         return databaseDir.resolve(task.filename)
     }
@@ -216,16 +210,16 @@ class Database(
 
     private fun getFilenameForActiveTask(task : Task):String {
         val format = "%03d_%.20s.md"
-        val title = task.title.replace(" ","_")
+        val filename = filterFilenameCharacters(task.title)
 
-        return format.format(task.attributes.id,title)
+        return format.format(task.attributes.id,filename)
     }
 
     private fun getFilenameForArchiveTask(task : Task):String {
         val format = "%tY%tm%td_%.20s.md"
         val now= Calendar.getInstance()
-        val title = task.title.replace(" ","_")
+        val filename = filterFilenameCharacters(task.title)
 
-        return format.format(now,now,now,title)
+        return format.format(now,now,now,filename)
     }
 }
