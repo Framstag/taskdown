@@ -1,4 +1,4 @@
-name: Ubuntu Latest using JDK 15 and mvn
+name: Ubuntu Latest using JDK 15 and Maven
 
 on:
   pull_request:
