@@ -21,5 +21,3 @@ jobs:
           java-version: 15
       - name: Build with gradle
         run:  ./gradlew build
-      - name: Test with gradle
-        run:  ./gradlew test
