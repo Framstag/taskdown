@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
 
 class ArchiveTask : CliktCommand(name = "archive", help = "Archive a task") {
-    val id : Int by argument(help="Id of the task").int()
+    private val id : Int by argument(help="Id of the task").int()
 
     private val database by requireObject<Database>()
 

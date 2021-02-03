@@ -10,7 +10,7 @@ import java.nio.file.Files
 
 class UndoTask : CliktCommand(name="undo", help="Revert to task backup") {
     // Arguments
-    val id : Int by argument(help="Id of the task").int()
+    private val id : Int by argument(help="Id of the task").int()
 
     private val database by requireObject<Database>()
 

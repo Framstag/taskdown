@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.types.int
 
 class DeleteTask : CliktCommand(name="delete", help="Delete an existing task") {
-    val id by argument(help="Id of the task").int().multiple()
+    private val id by argument(help="Id of the task").int().multiple()
 
     private val database by requireObject<Database>()
 

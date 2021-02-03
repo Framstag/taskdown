@@ -20,7 +20,7 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     private val tag by option(help="List of tags to assign to the task").multiple().unique()
 
     // Arguments
-    val id : Int by argument(help="Id of the task").int()
+    private val id : Int by argument(help="Id of the task").int()
 
     private val database by requireObject<Database>()
 

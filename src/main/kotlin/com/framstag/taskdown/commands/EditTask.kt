@@ -10,7 +10,7 @@ import com.github.ajalt.clikt.parameters.types.int
 
 class EditTask : CliktCommand(name="edit", help="edit an existing task") {
     // Arguments
-    val id : Int by argument(help="Id of the task").int()
+    private val id : Int by argument(help="Id of the task").int()
 
     private val database by requireObject<Database>()
 
