@@ -12,7 +12,7 @@ import java.time.format.FormatStyle
 
 class ShowTask : CliktCommand(name="show", help="show an existing task") {
     // Arguments
-    val id : Int by argument(help="Id of the task").int()
+    private val id : Int by argument(help="Id of the task").int()
 
     private val database by requireObject<Database>()
 

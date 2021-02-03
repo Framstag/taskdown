@@ -10,6 +10,7 @@ fun main(args: Array<String>) {
             ArchiveTask(),
             DeleteTask(),
             EditTask(),
+            SearchTasks(),
             ShowTags(),
             ListTasks(),
             ShowTask(),
