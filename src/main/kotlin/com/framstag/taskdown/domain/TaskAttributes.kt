@@ -6,7 +6,8 @@ data class TaskAttributes(
     val id: Int,
     val priority: Priority = Priority.C,
     val tags: Set<String> = setOf(),
-    val creationDate: LocalDate? = null
+    val creationDate: LocalDate? = null,
+    val dueDate : LocalDate? = null
 ) {
 
     fun withPriority(priority: Priority): TaskAttributes {
@@ -27,6 +28,14 @@ data class TaskAttributes(
 
     fun withCreationDate(creationDate: LocalDate): TaskAttributes {
         return this.copy(creationDate = creationDate)
+    }
+
+    fun withNoDueDate(): TaskAttributes {
+        return this.copy(dueDate = null)
+    }
+
+    fun withDueDate(dueDate: LocalDate): TaskAttributes {
+        return this.copy(dueDate = dueDate)
     }
 
     fun tagString():String {

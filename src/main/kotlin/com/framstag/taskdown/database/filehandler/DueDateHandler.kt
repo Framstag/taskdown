@@ -8,13 +8,13 @@ import java.nio.file.Path
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class CreationDateHandler : AttributeFileHandler {
+class DueDateHandler : AttributeFileHandler {
     override fun fileValueToAttribute(file: Path, value: String, current: TaskAttributes): TaskAttributes {
         try {
             if (value.isNotEmpty()) {
-                val creationDate = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
+                val dueDate = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
 
-                return current.withCreationDate(creationDate)
+                return current.withDueDate(dueDate)
             }
             else {
                 return current
@@ -27,14 +27,14 @@ class CreationDateHandler : AttributeFileHandler {
 
     override fun attributeToKeyValue(current: TaskAttributes): Pair<String, String> {
 
-        return if (current.creationDate != null) {
-            Pair(NAME, current.creationDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
+        return if (current.dueDate != null) {
+            Pair(NAME, current.dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
         } else {
             Pair(NAME, "")
         }
     }
 
     companion object {
-        const val NAME = "CreationDate"
+        const val NAME = "DueDate"
     }
 }

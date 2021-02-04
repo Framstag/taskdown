@@ -27,6 +27,9 @@ class ShowTask : CliktCommand(name="show", help="show an existing task") {
         if (task.attributes.creationDate!=null) {
             println("Creation: ${t.yellow(task.attributes.creationDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
         }
+        if (task.attributes.dueDate!=null) {
+            println("Due:      ${t.yellow(task.attributes.dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
+        }
 
         println("Tags:     ${t.yellow(task.attributes.tagString())}")
         println()
