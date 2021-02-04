@@ -2,6 +2,7 @@ package com.framstag.taskdown.domain
 
 import com.github.ajalt.mordant.TermColors
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.Comparator
 
 class TaskByPriorityComparator : Comparator<Task> {
@@ -41,8 +42,10 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
     fun toFormattedString():String {
         val t = TermColors()
 
+        val today = LocalDate.now()
+
         val creationDays = if (attributes.creationDate != null) {
-            LocalDate.now().toEpochDay()-attributes.creationDate.toEpochDay()
+            today.toEpochDay()-attributes.creationDate.toEpochDay()
         }
         else {
             0
@@ -66,7 +69,26 @@ data class Task(val filename: String, val title : String, val attributes : TaskA
             else -> titleString
         }
 
-        return "$idString $coloredPriorityString $creationDateString $coloredTitleString $tagString"
+        val coloredDueDateString =
+            if (attributes.dueDate != null) {
+                val dueDateString = attributes.dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+                when {
+                    attributes.dueDate.isEqual(today) -> {
+                        t.red(dueDateString)
+                    }
+                    attributes.dueDate.isBefore(today) -> {
+                        t.bold(t.red(dueDateString))
+                    }
+                    else -> {
+                        t.gray(dueDateString)
+                    }
+                }
+            } else {
+                "          "
+            }
+
+        return "$idString $coloredPriorityString $coloredDueDateString $creationDateString $coloredTitleString $tagString"
     }
 
     companion object {

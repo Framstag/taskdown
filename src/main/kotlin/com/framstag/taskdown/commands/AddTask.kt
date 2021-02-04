@@ -7,12 +7,10 @@ import com.framstag.taskdown.domain.TaskAttributes
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.multiple
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.unique
+import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.choice
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val database by requireObject<Database>()
@@ -20,6 +18,9 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     // Options
     private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C").default("C")
     private val tag by option(help="List of tags to assign to the task").multiple().unique()
+    private val due : LocalDate? by option(help="Optional due date").convert {
+        LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
+    }
 
     // Arguments
     private val title by argument(help = "Task title")
@@ -36,6 +37,10 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         attributes = attributes.withPriority(parsedPriority)
         attributes = attributes.withTags(tag)
         attributes = attributes.withCreationDate(LocalDate.now())
+
+        due?.let {
+            attributes = attributes.withDueDate(it)
+        }
 
         val task = database.createTask(Task("",title,attributes,""))
 
