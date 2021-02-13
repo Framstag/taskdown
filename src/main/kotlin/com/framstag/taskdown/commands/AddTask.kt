@@ -4,6 +4,7 @@ import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
+import com.framstag.taskdown.system.TaskListFormatter
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -44,6 +45,8 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
 
         val task = database.createTask(Task("",title,attributes,""))
 
-        println(task.toFormattedString())
+        val formatter = TaskListFormatter()
+
+        println(formatter.format(task))
     }
 }

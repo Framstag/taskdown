@@ -3,6 +3,7 @@ package com.framstag.taskdown.commands
 import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.Task
+import com.framstag.taskdown.system.TaskListFormatter
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -76,6 +77,8 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
 
         val updatedTask = updateTask(task)
 
-        println(updatedTask.toFormattedString())
+        val formatter = TaskListFormatter()
+
+        println(formatter.format(updatedTask))
     }
 }
