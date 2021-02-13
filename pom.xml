@@ -15,7 +15,7 @@
 
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlin.version>1.4.21</kotlin.version>
+        <kotlin.version>1.4.30</kotlin.version>
 
         <junit.jupiter.version>5.7.0</junit.jupiter.version>
     </properties>
@@ -106,6 +106,9 @@
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
 
         <plugins>
+
+            <!-- Make sure, right versions are installed -->
+
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0-M3</version>
@@ -123,6 +126,31 @@
                             </rules>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>11</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <!--
+                    <execution>
+                        <id>enforce-dependency-convergence</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence/>
+                            </rules>
+                        </configuration>
+                    </execution>-->
                 </executions>
             </plugin>
 
@@ -166,6 +194,8 @@
                 <version>3.0.0-M5</version>
             </plugin>
 
+            <!-- Kotlin integration -->
+
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -187,6 +217,30 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Test coverage -->
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- build all-in-one jar -->
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
