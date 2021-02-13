@@ -39,7 +39,7 @@ data class TaskAttributes(
     }
 
     fun tagString():String {
-        return tags.joinToString(" ") {
+        return tags.toList().sorted().joinToString(" ") {
             "#$it"
         }
     }
