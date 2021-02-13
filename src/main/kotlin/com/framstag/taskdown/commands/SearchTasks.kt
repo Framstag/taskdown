@@ -1,7 +1,7 @@
 package com.framstag.taskdown.commands
 
 import com.framstag.taskdown.database.Database
-import com.framstag.taskdown.domain.Task
+import com.framstag.taskdown.system.TaskListFormatter
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -12,17 +12,15 @@ class SearchTasks : CliktCommand(name="search", help="search all tasks that matc
 
     private val database by requireObject<Database>()
 
-    private fun showTask(task : Task) {
-        println(task.toFormattedString())
-    }
-
     override fun run() {
+        val formatter = TaskListFormatter()
+
         database.loadTasks().sortedBy {
             it.attributes.id
         }.filter {
             it.title.contains(text, ignoreCase = true) || it.body.contains(text, ignoreCase = true)
         }.onEach {
-            showTask(it)
+            println(formatter.format(it))
         }
     }
 }

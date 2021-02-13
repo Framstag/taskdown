@@ -2,6 +2,7 @@ package com.framstag.taskdown.commands
 
 import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Task
+import com.framstag.taskdown.system.TaskListFormatter
 import com.framstag.taskdown.system.callEditorForFile
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
@@ -20,7 +21,9 @@ class EditTask : CliktCommand(name="edit", help="edit an existing task") {
         if (callEditorForFile(filenamePath)) {
             val reloadedTask = database.reloadTask(task)
 
-            println(reloadedTask.toFormattedString())
+            val formatter = TaskListFormatter()
+
+            println(formatter.format(reloadedTask))
         }
         else {
             System.err.println("ERROR: Error while calling external editor")

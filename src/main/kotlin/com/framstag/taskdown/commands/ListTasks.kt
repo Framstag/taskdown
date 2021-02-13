@@ -4,6 +4,7 @@ import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.TaskByAgeComparator
 import com.framstag.taskdown.domain.TaskByIdComparator
 import com.framstag.taskdown.domain.TaskByPriorityComparator
+import com.framstag.taskdown.system.TaskListFormatter
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.multiple
@@ -38,8 +39,10 @@ class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
                 .then(TaskByIdComparator())
         )
 
+        val formatter = TaskListFormatter()
+
         tasks.forEach { task ->
-            println(task.toFormattedString())
+            println(formatter.format(task))
         }
     }
 }
