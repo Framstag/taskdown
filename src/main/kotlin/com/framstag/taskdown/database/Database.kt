@@ -2,18 +2,18 @@ package com.framstag.taskdown.database
 
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.markdown.*
+import com.framstag.taskdown.system.FileSystem
 import com.framstag.taskdown.system.filterFilenameCharacters
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 import kotlin.jvm.Throws
 
-private fun loadFromFilenameToFileContent(filename: Path): FileContent {
-    return FileContent(filename, Files.readString(filename))
+private fun loadFromFilenameToFileContent(fileSystem : FileSystem, filename: Path): FileContent {
+    return FileContent(filename, fileSystem.readFile(filename))
 }
 
-private fun storeFromFileContentToFile(fileContent : FileContent) {
-    Files.writeString(fileContent.filename,fileContent.content,Charsets.UTF_8)
+private fun storeFromFileContentToFile(fileSystem : FileSystem, fileContent : FileContent) {
+    fileSystem.writeFile(fileContent.filename,fileContent.content)
 }
 
 private fun texBlockToContent(textBlock: TextBlock): FileContent {
@@ -45,29 +45,28 @@ private fun updateTextBlock(
 }
 
 class Database(
+    private val fileSystem : FileSystem,
     private val databaseDir: Path,
     private val archiveDir: Path,
     private val handlerMap: Map<String, AttributeFileHandler>
 ) {
     @Throws(NoValidDirectoryException::class)
-    fun validateDirectory(path : Path) {
-        val file = path.toFile()
+    private fun validateDirectory(directory : Path) {
 
-        if (!file.exists()) {
-            throw NoValidDirectoryException(path,"Does not exist")
+        if (!fileSystem.exists(directory)) {
+            throw NoValidDirectoryException(directory,"Does not exist")
         }
 
-
-        if (!file.isDirectory) {
-            throw NoValidDirectoryException(path,"Is not a directory")
+        if (!fileSystem.isDirectory(directory)) {
+            throw NoValidDirectoryException(directory,"Is not a directory")
         }
 
-        if (!file.canRead()) {
-            throw NoValidDirectoryException(path,"Directory is not readable")
+        if (!fileSystem.isReadable(directory)) {
+            throw NoValidDirectoryException(directory,"Directory is not readable")
         }
 
-        if (!file.canWrite()) {
-            throw NoValidDirectoryException(path,"Directory is not writeable")
+        if (!fileSystem.isWritable(directory)) {
+            throw NoValidDirectoryException(directory,"Directory is not writeable")
         }
     }
 
@@ -75,10 +74,6 @@ class Database(
     fun validate() {
         validateDirectory(databaseDir)
         validateDirectory(archiveDir)
-    }
-
-    private fun copyFile(from : Path, to : Path) {
-        Files.writeString(to, Files.readString(from))
     }
 
     private fun printFailureResults(failureResults : List<Result<Task>>) {
@@ -96,7 +91,7 @@ class Database(
 
     private fun loadTask(filename : Path):Task {
         return Result.runCatching {
-            loadFromFilenameToFileContent(filename)
+            loadFromFilenameToFileContent(fileSystem,filename)
         }.mapCatching {
             fileContentToTextBlock(it.filename,it.content)
         }.mapCatching {
@@ -117,7 +112,7 @@ class Database(
         }.mapCatching {
             texBlockToContent(it)
         }.mapCatching {
-            storeFromFileContentToFile(it)
+            storeFromFileContentToFile(fileSystem,it)
         }
 
         return taskOnDisk
@@ -132,19 +127,19 @@ class Database(
             val backupFilename=filename.replaceRange(postfixStart,filename.length,".bak")
             val backupFilePath= databaseDir.resolve(backupFilename)
 
-            copyFile(databaseFilePath,backupFilePath)
+            fileSystem.copyFile(databaseFilePath,backupFilePath)
         }
     }
 
     fun updateTask(task : Task):Task {
         val databaseFilePath = databaseDir.resolve(task.filename)
 
-        if (Files.notExists(databaseFilePath)) {
+        if (!fileSystem.exists(databaseFilePath)) {
             throw FileDoesNotExistException(databaseFilePath)
         }
 
         Result.runCatching {
-            loadFromFilenameToFileContent(databaseFilePath)
+            loadFromFilenameToFileContent(fileSystem, databaseFilePath)
         }.mapCatching {
             fileContentToTextBlock(it.filename,it.content)
         }.mapCatching {
@@ -152,7 +147,7 @@ class Database(
         }.mapCatching {
             texBlockToContent(it)
         }.mapCatching {
-            storeFromFileContentToFile(it)
+            storeFromFileContentToFile(fileSystem, it)
         }
 
         return task
@@ -162,16 +157,16 @@ class Database(
         val databaseFilePath = databaseDir.resolve(task.filename)
 
         // TODO: Delete possible backup, too
-        Files.delete(databaseFilePath)
+        fileSystem.deleteFile(databaseFilePath)
     }
 
     fun archiveTask(task : Task) {
         val databaseFilePath = databaseDir.resolve(task.filename)
         val archiveFilePath= archiveDir.resolve(getFilenameForArchiveTask(task))
 
-        copyFile(databaseFilePath,archiveFilePath)
+        fileSystem.copyFile(databaseFilePath,archiveFilePath)
 
-        Files.delete(databaseFilePath)
+        fileSystem.deleteFile(databaseFilePath)
     }
 
     fun reloadTask(task : Task):Task {

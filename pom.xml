@@ -77,7 +77,11 @@
             <version>5.4</version>
         </dependency>
 
-        <!-- Test -->
+        <!--
+         Test
+         -->
+
+        <!-- Kotlin -->
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -85,6 +89,8 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- JUnit 5 -->
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -97,6 +103,15 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mocking framework -->
+
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <version>1.10.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
