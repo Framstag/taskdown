@@ -16,30 +16,19 @@ private fun storeFromFileContentToFile(fileSystem : FileSystem, fileContent : Fi
     fileSystem.writeFile(fileContent.filename,fileContent.content)
 }
 
-private fun texBlockToContent(textBlock: TextBlock): FileContent {
+private fun texBlockToContent(taskDocument: TaskDocument): FileContent {
     return FileContent(
-        textBlock.filename,
-        textBlock.title + textBlock.taskDescription + textBlock.body
+        taskDocument.filename,
+        taskDocument.title + taskDocument.taskDescription + taskDocument.body
     )
 }
 
-private fun headerToTitle(header: String): String {
-    return header.substring(1).trim()
-}
-
-private fun textBlockToTask(textBlock: TextBlock, handlerMap: Map<String, AttributeFileHandler>): Task {
-    val title = headerToTitle(textBlock.title)
-    val attributes = taskSectionToTaskAttributes(textBlock.filename, textBlock.taskDescription, handlerMap)
-
-    return Task(textBlock.filename.fileName.toString(), title, attributes,textBlock.body)
-}
-
 private fun updateTextBlock(
-    textBlock: TextBlock,
+    taskDocument: TaskDocument,
     task: Task,
     handlerMap: Map<String, AttributeFileHandler>
-): TextBlock {
-    return textBlock
+): TaskDocument {
+    return taskDocument
         .withHeader(titleToHeader(task.title))
         .withTaskDescription(attributesToTaskSection(task.attributes, handlerMap))
 }
@@ -93,9 +82,7 @@ class Database(
         return Result.runCatching {
             loadFromFilenameToFileContent(fileSystem,filename)
         }.mapCatching {
-            fileContentToTextBlock(it.filename,it.content)
-        }.mapCatching {
-            textBlockToTask(it,handlerMap)
+            parseTask(it.filename,it.content, handlerMap)
         }.getOrThrow()
     }
 
@@ -106,7 +93,7 @@ class Database(
         val taskOnDisk = task.withFilename(filename)
 
         Result.runCatching {
-            TextBlock(path)
+            TaskDocument(path)
         }.mapCatching {
             updateTextBlock(it, task, handlerMap)
         }.mapCatching {
@@ -141,7 +128,7 @@ class Database(
         Result.runCatching {
             loadFromFilenameToFileContent(fileSystem, databaseFilePath)
         }.mapCatching {
-            fileContentToTextBlock(it.filename,it.content)
+            fileContentToTaskDocument(it.filename,it.content)
         }.mapCatching {
             updateTextBlock(it,task,handlerMap)
         }.mapCatching {
