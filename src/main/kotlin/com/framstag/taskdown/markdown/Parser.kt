@@ -1,45 +1,60 @@
 package com.framstag.taskdown.markdown
 
 import com.framstag.taskdown.database.FileFormatException
-import com.framstag.taskdown.database.TextBlock
+import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
-fun fileContentToTextBlock(filename: Path, content: String): TextBlock {
-    val titleStart = content.indexOf("#")
+fun fileContentToTaskDocument(filename: Path, content: String): TaskDocument {
+    // Find document title
+    var titleStart = content.indexOf("#")
 
     if (titleStart < 0) {
         throw FileFormatException(filename,"Cannot find top level title")
     }
 
+    // Advance behind the '#'
+    titleStart += 1
+
     var titleEnd = content.indexOf(System.lineSeparator(), titleStart + 1)
 
     if (titleEnd<0) {
-        titleEnd = content.length-1
+        titleEnd = content.length
     }
 
+    // Try to find the task sub-section
     val taskStart = content.indexOf(ATTRIBUTE_SECTION_TASK, titleEnd + 1)
 
     if (taskStart < 0) {
         throw FileFormatException(filename,"Cannot find 'Task' sub-section")
     }
 
-    val propertiesStart = content.indexOf(ATTRIBUTE_SECTION_TASK_PROPERTIES,taskStart + ATTRIBUTE_SECTION_TASK.length)
-    var taskEnd = content.indexOf(ATTRIBUTE_SECTION_2, propertiesStart+ ATTRIBUTE_SECTION_TASK_PROPERTIES.length)
+    // Now move through the task section to find its end
+    var taskCursor = taskStart + ATTRIBUTE_SECTION_TASK.length
 
-    if (taskEnd < 0) {
-        taskEnd = content.length-1
+    // Try to find optional properties sub-sub-section
+    val taskProperties = content.indexOf(ATTRIBUTE_SECTION_TASK_PROPERTIES,taskCursor)
+
+    if (taskProperties >= 0) {
+        taskCursor = taskProperties + ATTRIBUTE_SECTION_TASK_PROPERTIES.length
     }
 
-    return TextBlock(
+    // Jump to next sub-section after task sub-section
+    var taskEnd = content.indexOf(ATTRIBUTE_SECTION_2, taskCursor)
+
+    if (taskEnd < 0) {
+        taskEnd = content.length
+    }
+
+    return TaskDocument(
         filename,
-        content.substring(titleStart, taskStart),
+        content.substring(titleStart, titleEnd).trim(),
         content.substring(taskStart, taskEnd),
         content.substring(taskEnd, content.length)
     )
 }
 
-fun taskSectionToTaskAttributes(
+private fun taskSectionToTaskAttributes(
     filename: Path,
     section: String,
     handlerMap: Map<String, AttributeFileHandler>
@@ -92,4 +107,20 @@ fun taskSectionToTaskAttributes(
     }
 
     return attributes
+}
+
+private fun headerToTitle(header: String): String {
+    return header.substring(1).trim()
+}
+
+private fun textBlockToTask(taskDocument: TaskDocument, handlerMap: Map<String, AttributeFileHandler>): Task {
+    val title = headerToTitle(taskDocument.title)
+    val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, handlerMap)
+
+    return Task(taskDocument.filename.fileName.toString(), title, attributes,taskDocument.body)
+}
+
+fun parseTask(filename: Path, fileContent: String, handlerMap: Map<String, AttributeFileHandler>): Task {
+    val textBlock = fileContentToTaskDocument(filename, fileContent)
+    return textBlockToTask(textBlock, handlerMap)
 }
