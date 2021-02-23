@@ -7,14 +7,11 @@ import java.nio.file.Path
 
 fun fileContentToTaskDocument(filename: Path, content: String): TaskDocument {
     // Find document title
-    var titleStart = content.indexOf("#")
+    val titleStart = content.indexOf("#")
 
     if (titleStart < 0) {
         throw FileFormatException(filename,"Cannot find top level title")
     }
-
-    // Advance behind the '#'
-    titleStart += 1
 
     var titleEnd = content.indexOf(System.lineSeparator(), titleStart + 1)
 
