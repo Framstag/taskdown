@@ -21,13 +21,11 @@ fun attributesToTaskSection(attributes : TaskAttributes, handlerMap : Map<String
 
     stringList.addAll(ATTRIBUTE_SECTION_TASK_START.split("\n"))
 
-    val handler = handlerMap.entries.sortedBy {
+    handlerMap.entries.sortedBy {
         it.key
     }.map {
         it.value
-    }
-
-    handler.forEach {
+    }.forEach {
         val keyAndValue = it.attributeToKeyValue(attributes)
         val row = "|" + keyAndValue.first + "|" + keyAndValue.second + "|"
 
