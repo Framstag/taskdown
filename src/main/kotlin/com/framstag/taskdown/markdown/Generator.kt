@@ -10,15 +10,16 @@ private val ATTRIBUTE_SECTION_TASK_START =
     
     |Key     |Value|
     |--------|-----|
-    
-    """.trimIndent().replace("\n", System.lineSeparator())
+    """.trimIndent()
 
 fun titleToHeader(title: String): String {
     return "# $title"+System.lineSeparator()+System.lineSeparator()
 }
 
-fun attributesToTaskSection(attributes : TaskAttributes, handlerMap : Map<String, AttributeFileHandler>):String {
-    var section = ATTRIBUTE_SECTION_TASK_START
+fun attributesToTaskSection(attributes : TaskAttributes, handlerMap : Map<String, AttributeFileHandler>):List<String> {
+    val stringList = mutableListOf<String>()
+
+    stringList.addAll(ATTRIBUTE_SECTION_TASK_START.split("\n"))
 
     val handler = handlerMap.entries.sortedBy {
         it.key
@@ -28,12 +29,10 @@ fun attributesToTaskSection(attributes : TaskAttributes, handlerMap : Map<String
 
     handler.forEach {
         val keyAndValue = it.attributeToKeyValue(attributes)
-        val row = "|" + keyAndValue.first + "|" + keyAndValue.second + "|"+System.lineSeparator()
+        val row = "|" + keyAndValue.first + "|" + keyAndValue.second + "|"
 
-        section += row
+        stringList.add(row)
     }
 
-    section += System.lineSeparator()
-
-    return section
+    return stringList
 }

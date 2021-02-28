@@ -98,50 +98,67 @@ fun fileContentToTaskDocument(filename: Path, content: List<String>): TaskDocume
     return TaskDocument(
         filename,
         titleLine,
-        taskSectionContent.joinToString(System.lineSeparator()),
+        taskSectionContent,
         documentContent.joinToString(System.lineSeparator())
     )
 }
 
 private fun taskSectionToTaskAttributes(
     filename: Path,
-    section: String,
+    section: List<String>,
     handlerMap: Map<String, AttributeFileHandler>
 ): TaskAttributes {
+    val lineIterator = section.iterator()
+    var currentLine: String
 
     var attributes = TaskAttributes(0)
 
-    val propertiesStart = section.indexOf(ATTRIBUTE_SECTION_TASK_PROPERTIES)
+    // Search for properties section
+    var foundProperties = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    if (propertiesStart < 0) {
+        if (isHeader3(currentLine) && extractHeaderValue(currentLine)=="Properties") {
+            foundProperties = true
+            break
+        }
+    }
+
+    if (!foundProperties) {
         throw FileFormatException(filename,"Cannot find 'Task' sub-section 'Properties'")
     }
 
-    val tableStart = section.indexOf("|",propertiesStart+ ATTRIBUTE_SECTION_TASK_PROPERTIES.length)
+    // Search for table start
+    var foundTable = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    if (tableStart < 0) {
+        if (currentLine.isNotEmpty() && currentLine[0]=='|') {
+            foundTable = true
+            break
+        }
+    }
+
+    if (!foundTable) {
         throw FileFormatException(filename,"Cannot find 'Task' attribute table")
     }
 
-    // Table header
-    var tableRowStart = section.indexOf(System.lineSeparator(),tableStart)
+    // Skip table header
+    lineIterator.next()
 
-    // Table header divider
-    tableRowStart = section.indexOf(System.lineSeparator(),tableRowStart+System.lineSeparator().length)
+    // Skip divider
+    currentLine = lineIterator.next()
 
-    // Start of first value row
-    tableRowStart = section.indexOf("|", tableRowStart+System.lineSeparator().length)
+    while (currentLine.isNotEmpty() && currentLine[0]=='|') {
+        val column1Start = 0
+        val column1End = currentLine.indexOf("|", column1Start + 1)
 
-    while (tableRowStart >= 0) {
-        val column1Start = tableRowStart
-        val column1End = section.indexOf("|", column1Start + 1)
-
-        val keyName = section.substring(column1Start + 1, column1End).trim()
+        val keyName = currentLine.substring(column1Start + 1, column1End).trim()
 
         val column2Start = column1End
-        val column2End = section.indexOf("|", column2Start + 1)
+        val column2End = currentLine.indexOf("|", column2Start + 1)
 
-        val value = section.substring(column2Start + 1, column2End).trim()
+        val value = currentLine.substring(column2Start + 1, column2End).trim()
 
         val handler = handlerMap[keyName]
 
@@ -152,7 +169,12 @@ private fun taskSectionToTaskAttributes(
             throw FileFormatException(filename,"Unknown task attribute '$keyName'")
         }
 
-        tableRowStart = section.indexOf("|", column2End+1)
+        if (lineIterator.hasNext()) {
+            currentLine = lineIterator.next()
+        }
+        else {
+            break
+        }
     }
 
     return attributes
@@ -166,7 +188,7 @@ private fun textBlockToTask(taskDocument: TaskDocument, handlerMap: Map<String, 
     val title = headerToTitle(taskDocument.title)
     val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, handlerMap)
 
-    return Task(taskDocument.filename.fileName.toString(), title, attributes,taskDocument.body)
+    return Task(taskDocument.filename.fileName.toString(), title, attributes, taskDocument.body)
 }
 
 fun parseTask(filename: Path, fileContent: String, handlerMap: Map<String, AttributeFileHandler>): Task {

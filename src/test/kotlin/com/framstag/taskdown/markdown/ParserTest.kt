@@ -83,7 +83,7 @@ class ParserTest {
 
         Assertions.assertEquals(content.filename, document.filename)
         Assertions.assertEquals("# Test", document.title)
-        Assertions.assertEquals("## Task", document.taskDescription)
+        Assertions.assertEquals("## Task".split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }
 
@@ -106,7 +106,7 @@ class ParserTest {
 
         Assertions.assertEquals(content.filename, document.filename)
         Assertions.assertEquals("# Test", document.title)
-        Assertions.assertEquals(taskSubSection, document.taskDescription)
+        Assertions.assertEquals(taskSubSection.split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }
 
@@ -129,7 +129,7 @@ class ParserTest {
 
         Assertions.assertEquals(content.filename, document.filename)
         Assertions.assertEquals("# Test", document.title)
-        Assertions.assertEquals(taskSubSection, document.taskDescription)
+        Assertions.assertEquals(taskSubSection.split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }
 
