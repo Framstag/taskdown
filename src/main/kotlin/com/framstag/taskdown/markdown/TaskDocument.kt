@@ -15,8 +15,4 @@ data class TaskDocument(
     fun withTaskDescription(taskDescription: List<String>): TaskDocument {
         return this.copy(taskDescription = taskDescription)
     }
-
-    fun toFileContent():String {
-        return title + taskDescription.joinToString(System.lineSeparator()) + body
-    }
 }

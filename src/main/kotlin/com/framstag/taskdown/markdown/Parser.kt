@@ -46,7 +46,7 @@ fun fileContentToTaskDocument(filename: Path, content: List<String>): TaskDocume
         throw FileFormatException(filename,"Cannot find top level title")
     }
 
-    val titleLine = currentLine
+    val title = extractHeaderValue(currentLine)
 
     // Search for task section
     val taskSectionContent = mutableListOf<String>()
@@ -73,11 +73,11 @@ fun fileContentToTaskDocument(filename: Path, content: List<String>): TaskDocume
             break
         }
         else if (isHeader3(currentLine)) {
-            when (val title = extractHeaderValue(currentLine)) {
+            when (val header3Title = extractHeaderValue(currentLine)) {
                 "Properties" -> {}
                 "History" -> {}
                 else -> {
-                    throw FileFormatException(filename,"Unknown 'task' sub section '$title'")
+                    throw FileFormatException(filename,"Unknown 'task' sub section '$header3Title'")
                 }
             }
 
@@ -97,7 +97,7 @@ fun fileContentToTaskDocument(filename: Path, content: List<String>): TaskDocume
 
     return TaskDocument(
         filename,
-        titleLine,
+        title,
         taskSectionContent,
         documentContent.joinToString(System.lineSeparator())
     )
@@ -180,12 +180,8 @@ private fun taskSectionToTaskAttributes(
     return attributes
 }
 
-private fun headerToTitle(header: String): String {
-    return header.substring(1).trim()
-}
-
 private fun textBlockToTask(taskDocument: TaskDocument, handlerMap: Map<String, AttributeFileHandler>): Task {
-    val title = headerToTitle(taskDocument.title)
+    val title = taskDocument.title
     val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, handlerMap)
 
     return Task(taskDocument.filename.fileName.toString(), title, attributes, taskDocument.body)

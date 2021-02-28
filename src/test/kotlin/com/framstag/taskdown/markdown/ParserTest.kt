@@ -82,7 +82,7 @@ class ParserTest {
         val document = fileContentToTaskDocument(content.filename, content.content)
 
         Assertions.assertEquals(content.filename, document.filename)
-        Assertions.assertEquals("# Test", document.title)
+        Assertions.assertEquals("Test", document.title)
         Assertions.assertEquals("## Task".split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }
@@ -105,7 +105,7 @@ class ParserTest {
         val document = fileContentToTaskDocument(content.filename, content.content)
 
         Assertions.assertEquals(content.filename, document.filename)
-        Assertions.assertEquals("# Test", document.title)
+        Assertions.assertEquals("Test", document.title)
         Assertions.assertEquals(taskSubSection.split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }
@@ -128,7 +128,7 @@ class ParserTest {
         val document = fileContentToTaskDocument(content.filename, content.content)
 
         Assertions.assertEquals(content.filename, document.filename)
-        Assertions.assertEquals("# Test", document.title)
+        Assertions.assertEquals("Test", document.title)
         Assertions.assertEquals(taskSubSection.split(System.lineSeparator()), document.taskDescription)
         Assertions.assertEquals("", document.body)
     }

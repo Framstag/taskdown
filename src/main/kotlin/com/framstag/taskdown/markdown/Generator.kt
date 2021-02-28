@@ -34,3 +34,7 @@ fun attributesToTaskSection(attributes : TaskAttributes, handlerMap : Map<String
 
     return stringList
 }
+
+fun taskDocumentToFileContent(document: TaskDocument): String {
+    return titleToHeader(document.title) + document.taskDescription.joinToString(System.lineSeparator()) + document.body
+}

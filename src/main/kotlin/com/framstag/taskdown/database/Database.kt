@@ -19,7 +19,7 @@ private fun storeFromFileContentToFile(fileSystem : FileSystem, fileContent : Fi
 private fun texBlockToContent(document: TaskDocument): FileContent {
     return FileContent(
         document.filename,
-        document.toFileContent()
+        taskDocumentToFileContent(document)
     )
 }
 
@@ -29,7 +29,7 @@ private fun updateTextBlock(
     handlerMap: Map<String, AttributeFileHandler>
 ): TaskDocument {
     return document
-        .withHeader(titleToHeader(task.title))
+        .withHeader(task.title)
         .withTaskDescription(attributesToTaskSection(task.attributes, handlerMap))
 }
 
