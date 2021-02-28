@@ -16,7 +16,7 @@ data class TaskDocument(
         return this.copy(taskDescription = taskDescription)
     }
 
-    override fun toString():String {
+    fun toFileContent():String {
         return title + taskDescription.joinToString(System.lineSeparator()) + body
     }
 }

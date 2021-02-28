@@ -19,7 +19,7 @@ private fun storeFromFileContentToFile(fileSystem : FileSystem, fileContent : Fi
 private fun texBlockToContent(document: TaskDocument): FileContent {
     return FileContent(
         document.filename,
-        document.toString()
+        document.toFileContent()
     )
 }
 
