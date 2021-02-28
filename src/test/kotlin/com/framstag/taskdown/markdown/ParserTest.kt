@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 class ParserTest {
     @Test
-    fun testEmptyTask() {
+    fun emptyTaskContent() {
         val fileContent = ""
 
         val content = FileContent(Path.of("Test.md"), fileContent)
@@ -25,7 +25,7 @@ class ParserTest {
     }
 
     @Test
-    fun testEmptyLineTask() {
+    fun emptyLineTaskContent() {
         val fileContent = """
         """.trimIndent().replace("\n", System.lineSeparator())
 
@@ -40,7 +40,7 @@ class ParserTest {
     }
 
     @Test
-    fun testBrokenMarkdownTask() {
+    fun contentDoesNotStartWithSection() {
         val fileContent = "***"
 
         val content = FileContent(Path.of("Test.md"), fileContent)
@@ -54,7 +54,7 @@ class ParserTest {
     }
 
     @Test
-    fun testOnlyTitle() {
+    fun contentDoesNotHaveTaskSection() {
         val fileContent = """
             # Test
         """.trimIndent().replace("\n", System.lineSeparator())
@@ -70,7 +70,7 @@ class ParserTest {
     }
 
     @Test
-    fun testEmptyTaskSection() {
+    fun taskSubSectionIsEmpty() {
         val fileContent = """
             # Test
 
@@ -88,7 +88,7 @@ class ParserTest {
     }
 
     @Test
-    fun testTaskSectionWithSomeContent() {
+    fun taskSubSectionCanHaveAnyContent() {
         val fileHeader = """
             # Test
 
@@ -111,7 +111,7 @@ class ParserTest {
     }
 
     @Test
-    fun testTaskSectionWithPropertiesSubSubSection() {
+    fun taskSubSectionCanHavePropertiesSubSubSection() {
         val fileHeader = """
             # Test
 
@@ -134,7 +134,27 @@ class ParserTest {
     }
 
     @Test
-    fun parseIdTest() {
+    fun taskSubSectionMustNotHaveUnknownSubSubSection() {
+        val fileContent = """
+            # Test
+            
+            ## Task
+            
+            ### BlaBlaBla
+        """.trimIndent().replace("\n", System.lineSeparator())
+
+        val content = FileContent(Path.of("Test.md"), fileContent)
+
+        val exception = Assertions.assertThrows(FileFormatException::class.java) {
+            fileContentToTaskDocument(content.filename, content.content)
+        }
+
+        Assertions.assertEquals(content.filename, exception.filename)
+        Assertions.assertEquals("Unknown 'task' sub section 'BlaBlaBla'", exception.errorDescription)
+    }
+
+    @Test
+    fun successfullyParsesNumericalId() {
         val fileContent = """
             # Test
             ## Task
@@ -152,7 +172,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseNegativeIdTest() {
+    fun idMustNotBeNegative() {
         val fileContent = """
             # Test
             ## Task
@@ -171,7 +191,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseNonNumberIdTest() {
+    fun idMustBeNumeric() {
         val fileContent = """
             # Test
             ## Task
@@ -190,7 +210,7 @@ class ParserTest {
     }
 
     @Test
-    fun parsePriorityATest() {
+    fun priorityAIsOK() {
         val fileContent = """
             # Test
             ## Task
@@ -208,7 +228,7 @@ class ParserTest {
     }
 
     @Test
-    fun parsePriorityBTest() {
+    fun priorityBIsOK() {
         val fileContent = """
             # Test
             ## Task
@@ -226,7 +246,7 @@ class ParserTest {
     }
 
     @Test
-    fun parsePriorityCTest() {
+    fun priorityCIsOK() {
         val fileContent = """
             # Test
             ## Task
@@ -244,7 +264,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseUnknownPriorityTest() {
+    fun anyOtherPriorityIsFailure() {
         val fileContent = """
             # Test
             ## Task
@@ -263,7 +283,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseEmptyPriorityTest() {
+    fun emptyPriorityIsNotAllowed() {
         val fileContent = """
             # Test
             ## Task
@@ -282,7 +302,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseCreationDateTest() {
+    fun creationDateMustBeISOODate() {
         val fileContent = """
             # Test
             ## Task
@@ -300,7 +320,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseWronglyFormattedCreationDateTest() {
+    fun anyOtherCreationDateFormatIsFailure() {
         val fileContent = """
             # Test
             ## Task
@@ -319,7 +339,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseEmptyCreationDateTest() {
+    fun emptyCreationDateIsFailure() {
         val fileContent = """
             # Test
             ## Task
@@ -337,7 +357,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseDueDateTest() {
+    fun dueDateMustBeISODate() {
         val fileContent = """
             # Test
             ## Task
@@ -355,7 +375,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseWronglyFormattedDueDateTest() {
+    fun anyOtherDueDateFormatIsFailure() {
         val fileContent = """
             # Test
             ## Task
@@ -374,7 +394,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseEmptyDueDateTest() {
+    fun emptyDueDateIsFailure() {
         val fileContent = """
             # Test
             ## Task
@@ -392,7 +412,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseOneTagTest() {
+    fun oneTagValueIsOK() {
         val fileContent = """
             # Test
             ## Task
@@ -410,7 +430,7 @@ class ParserTest {
     }
 
     @Test
-    fun parseMultipleTagsTest() {
+    fun multipleTagValuesAreOK() {
         val fileContent = """
             # Test
             ## Task
