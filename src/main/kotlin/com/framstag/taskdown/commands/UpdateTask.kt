@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     // Options
     private val title by option(help ="Title of the task")
-    private val priority by option(help = "Priority of the task, either 'A', 'B' or (default) 'C'").choice("A", "B", "C").default("C")
+    private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C")
     private val tag by option(help="List of tags to assign to the task").multiple().unique()
     private val due : LocalDate? by option(help="Due date").convert {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
@@ -32,13 +32,16 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     private fun updateTask(task : Task):Task {
         var updatedTask = task
 
-        if (!title.isNullOrBlank()) {
-            updatedTask = task.withTitle(title!!)
+        title?.let {
+            updatedTask = task.withTitle(it)
         }
 
-        val parsedPriority = Priority.valueOf(priority)
+        priority?.let {
+            val parsedPriority = Priority.valueOf(it)
 
-        updatedTask = updatedTask.withAttributes(updatedTask.attributes.withPriority(parsedPriority))
+            updatedTask = updatedTask.withAttributes(updatedTask.attributes.withPriority(parsedPriority))
+        }
+
 
         tag.forEach {
             updatedTask = if (it=="-") {
