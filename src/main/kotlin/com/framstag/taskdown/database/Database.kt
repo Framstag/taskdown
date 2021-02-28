@@ -16,19 +16,19 @@ private fun storeFromFileContentToFile(fileSystem : FileSystem, fileContent : Fi
     fileSystem.writeFile(fileContent.filename,fileContent.content)
 }
 
-private fun texBlockToContent(taskDocument: TaskDocument): FileContent {
+private fun texBlockToContent(document: TaskDocument): FileContent {
     return FileContent(
-        taskDocument.filename,
-        taskDocument.title + taskDocument.taskDescription + taskDocument.body
+        document.filename,
+        document.toString()
     )
 }
 
 private fun updateTextBlock(
-    taskDocument: TaskDocument,
+    document: TaskDocument,
     task: Task,
     handlerMap: Map<String, AttributeFileHandler>
 ): TaskDocument {
-    return taskDocument
+    return document
         .withHeader(titleToHeader(task.title))
         .withTaskDescription(attributesToTaskSection(task.attributes, handlerMap))
 }
