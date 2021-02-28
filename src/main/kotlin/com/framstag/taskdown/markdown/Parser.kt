@@ -5,91 +5,160 @@ import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
-fun fileContentToTaskDocument(filename: Path, content: String): TaskDocument {
-    // Find document title
-    val titleStart = content.indexOf("#")
+fun contentToLines(content : String):List<String> {
+    return content.split(System.lineSeparator())
+}
 
-    if (titleStart < 0) {
+fun fileContentToTaskDocument(filename: Path, content: String): TaskDocument {
+    return fileContentToTaskDocument(filename, contentToLines(content))
+}
+
+fun isHeader1(line: String): Boolean {
+    return line.length >= 2 && line[0] == '#' && line[1] != '#'
+}
+
+fun isHeader2(line: String): Boolean {
+    return line.length >= 3 && line[0] == '#' && line[1] == '#' && line[2] != '#'
+}
+
+fun isHeader3(line: String): Boolean {
+    return line.length >= 4 && line[0] == '#' && line[1] == '#' && line[2] == '#' && line[3] != '#'
+}
+
+fun extractHeaderValue(line : String):String {
+    var pos = 0
+
+    while (pos < line.length && line[pos]=='#') {
+        pos++
+    }
+
+    return line.substring(pos).trim()
+}
+
+fun fileContentToTaskDocument(filename: Path, content: List<String>): TaskDocument {
+    val lineIterator = content.iterator()
+    var currentLine = lineIterator.next()
+
+    // Even an empty string should result in an non-empty list
+    assert(content.isNotEmpty())
+
+    if (!isHeader1(currentLine)) {
         throw FileFormatException(filename,"Cannot find top level title")
     }
 
-    var titleEnd = content.indexOf(System.lineSeparator(), titleStart + 1)
+    val title = extractHeaderValue(currentLine)
 
-    if (titleEnd<0) {
-        titleEnd = content.length
+    // Search for task section
+    val taskSectionContent = mutableListOf<String>()
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
+
+        if (isHeader2(currentLine) && extractHeaderValue(currentLine)=="Task") {
+            taskSectionContent.add(currentLine)
+            break
+        }
     }
 
-    // Try to find the task sub-section
-    val taskStart = content.indexOf(ATTRIBUTE_SECTION_TASK, titleEnd + 1)
-
-    if (taskStart < 0) {
+    if (taskSectionContent.isEmpty()) {
         throw FileFormatException(filename,"Cannot find 'Task' sub-section")
     }
 
-    // Now move through the task section to find its end
-    var taskCursor = taskStart + ATTRIBUTE_SECTION_TASK.length
+    // Search for end or next sub-section
+    val documentContent = mutableListOf<String>()
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    // Try to find optional properties sub-sub-section
-    val taskProperties = content.indexOf(ATTRIBUTE_SECTION_TASK_PROPERTIES,taskCursor)
+        if (isHeader2(currentLine)) {
+            documentContent.add(currentLine)
+            break
+        }
+        else if (isHeader3(currentLine)) {
+            when (val header3Title = extractHeaderValue(currentLine)) {
+                "Properties" -> {}
+                "History" -> {}
+                else -> {
+                    throw FileFormatException(filename,"Unknown 'task' sub section '$header3Title'")
+                }
+            }
 
-    if (taskProperties >= 0) {
-        taskCursor = taskProperties + ATTRIBUTE_SECTION_TASK_PROPERTIES.length
+            taskSectionContent.add(currentLine)
+        }
+        else {
+            taskSectionContent.add(currentLine)
+        }
     }
 
-    // Jump to next sub-section after task sub-section
-    var taskEnd = content.indexOf(ATTRIBUTE_SECTION_2, taskCursor)
+    // Collect rest of body
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    if (taskEnd < 0) {
-        taskEnd = content.length
+        documentContent.add(currentLine)
     }
 
     return TaskDocument(
         filename,
-        content.substring(titleStart, titleEnd).trim(),
-        content.substring(taskStart, taskEnd),
-        content.substring(taskEnd, content.length)
+        title,
+        taskSectionContent,
+        documentContent.joinToString(System.lineSeparator())
     )
 }
 
 private fun taskSectionToTaskAttributes(
     filename: Path,
-    section: String,
+    section: List<String>,
     handlerMap: Map<String, AttributeFileHandler>
 ): TaskAttributes {
+    val lineIterator = section.iterator()
+    var currentLine: String
 
     var attributes = TaskAttributes(0)
 
-    val propertiesStart = section.indexOf(ATTRIBUTE_SECTION_TASK_PROPERTIES)
+    // Search for properties section
+    var foundProperties = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    if (propertiesStart < 0) {
+        if (isHeader3(currentLine) && extractHeaderValue(currentLine)=="Properties") {
+            foundProperties = true
+            break
+        }
+    }
+
+    if (!foundProperties) {
         throw FileFormatException(filename,"Cannot find 'Task' sub-section 'Properties'")
     }
 
-    val tableStart = section.indexOf("|",propertiesStart+ ATTRIBUTE_SECTION_TASK_PROPERTIES.length)
+    // Search for table start
+    var foundTable = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
 
-    if (tableStart < 0) {
+        if (currentLine.isNotEmpty() && currentLine[0]=='|') {
+            foundTable = true
+            break
+        }
+    }
+
+    if (!foundTable) {
         throw FileFormatException(filename,"Cannot find 'Task' attribute table")
     }
 
-    // Table header
-    var tableRowStart = section.indexOf(System.lineSeparator(),tableStart)
+    // Skip table header
+    lineIterator.next()
 
-    // Table header divider
-    tableRowStart = section.indexOf(System.lineSeparator(),tableRowStart+System.lineSeparator().length)
+    // Skip divider
+    currentLine = lineIterator.next()
 
-    // Start of first value row
-    tableRowStart = section.indexOf("|", tableRowStart+System.lineSeparator().length)
+    while (currentLine.isNotEmpty() && currentLine[0]=='|') {
+        val column1Start = 0
+        val column1End = currentLine.indexOf("|", column1Start + 1)
 
-    while (tableRowStart >= 0) {
-        val column1Start = tableRowStart
-        val column1End = section.indexOf("|", column1Start + 1)
-
-        val keyName = section.substring(column1Start + 1, column1End).trim()
+        val keyName = currentLine.substring(column1Start + 1, column1End).trim()
 
         val column2Start = column1End
-        val column2End = section.indexOf("|", column2Start + 1)
+        val column2End = currentLine.indexOf("|", column2Start + 1)
 
-        val value = section.substring(column2Start + 1, column2End).trim()
+        val value = currentLine.substring(column2Start + 1, column2End).trim()
 
         val handler = handlerMap[keyName]
 
@@ -100,21 +169,22 @@ private fun taskSectionToTaskAttributes(
             throw FileFormatException(filename,"Unknown task attribute '$keyName'")
         }
 
-        tableRowStart = section.indexOf("|", column2End+1)
+        if (lineIterator.hasNext()) {
+            currentLine = lineIterator.next()
+        }
+        else {
+            break
+        }
     }
 
     return attributes
 }
 
-private fun headerToTitle(header: String): String {
-    return header.substring(1).trim()
-}
-
 private fun textBlockToTask(taskDocument: TaskDocument, handlerMap: Map<String, AttributeFileHandler>): Task {
-    val title = headerToTitle(taskDocument.title)
+    val title = taskDocument.title
     val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, handlerMap)
 
-    return Task(taskDocument.filename.fileName.toString(), title, attributes,taskDocument.body)
+    return Task(taskDocument.filename.fileName.toString(), title, attributes, taskDocument.body)
 }
 
 fun parseTask(filename: Path, fileContent: String, handlerMap: Map<String, AttributeFileHandler>): Task {
