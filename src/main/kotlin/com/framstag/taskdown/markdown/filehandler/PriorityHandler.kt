@@ -1,4 +1,4 @@
-package com.framstag.taskdown.database.filehandler
+package com.framstag.taskdown.markdown.filehandler
 
 import com.framstag.taskdown.markdown.AttributeFileHandler
 import com.framstag.taskdown.database.FileFormatException
@@ -6,7 +6,7 @@ import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
-class PriorityFileHandler : AttributeFileHandler {
+class PriorityHandler : AttributeFileHandler {
     override fun fileValueToAttribute(file: Path, value: String, current: TaskAttributes): TaskAttributes {
         val priority = when (value) {
             "A" -> Priority.A

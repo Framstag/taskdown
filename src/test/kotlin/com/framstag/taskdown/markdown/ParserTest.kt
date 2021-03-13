@@ -2,12 +2,14 @@ package com.framstag.taskdown.markdown
 
 import com.framstag.taskdown.database.FileContent
 import com.framstag.taskdown.database.FileFormatException
-import com.framstag.taskdown.database.filehandler.fileHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownPropertyHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownHistoryHandlerMap
 import com.framstag.taskdown.domain.Priority
+import com.framstag.taskdown.domain.TaskLog
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ParserTest {
     @Test
@@ -154,63 +156,7 @@ class ParserTest {
     }
 
     @Test
-    fun successfullyParsesNumericalId() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |Id|1|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(1, task.attributes.id)
-    }
-
-    @Test
-    fun idMustNotBeNegative() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |Id|-1|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-
-        Assertions.assertThrows(FileFormatException::class.java) {
-            parseTask(content.filename, content.content, fileHandlerMap)
-        }
-    }
-
-    @Test
-    fun idMustBeNumeric() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |Id|XXX|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-
-        Assertions.assertThrows(FileFormatException::class.java) {
-            parseTask(content.filename, content.content, fileHandlerMap)
-        }
-    }
-
-    @Test
-    fun priorityAIsOK() {
+    fun attributeHandlerCallingDuringParsingWorks() {
         val fileContent = """
             # Test
             ## Task
@@ -222,154 +168,36 @@ class ParserTest {
         """.trimIndent().replace("\n", System.lineSeparator())
 
         val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
+        val task = parseTask(content.filename, content.content, markdownPropertyHandlerMap, markdownHistoryHandlerMap)
 
         Assertions.assertEquals(Priority.A, task.attributes.priority)
     }
 
     @Test
-    fun creationDateMustBeISOODate() {
+    fun historyHandlerCallingDuringParsingWorks() {
+        val dateTime = LocalDateTime.of(2020, 10, 1, 13, 0, 0)
+
         val fileContent = """
             # Test
+            
             ## Task
+            
             ### Properties
             
             |Key|Value|
             |---|-----|
-            |CreationDate|2020-10-01|
-        """.trimIndent().replace("\n", System.lineSeparator())
 
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(LocalDate.of(2020, 10, 1), task.attributes.creationDate)
-    }
-
-    @Test
-    fun anyOtherCreationDateFormatIsFailure() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
+            ### History
             
-            |Key|Value|
-            |---|-----|
-            |CreationDate|20201001|
+            |Date|Type|Value|
+            |----|----|-----|
+            |2020-10-01T13:00:00|Log|This is a test|
         """.trimIndent().replace("\n", System.lineSeparator())
 
         val content = FileContent(Path.of("Test.md"), fileContent)
+        val task = parseTask(content.filename, content.content, markdownPropertyHandlerMap, markdownHistoryHandlerMap)
 
-        Assertions.assertThrows(FileFormatException::class.java) {
-            parseTask(content.filename, content.content, fileHandlerMap)
-        }
+        Assertions.assertEquals(listOf(TaskLog(dateTime,"This is a test")), task.history.logs)
     }
 
-    @Test
-    fun emptyCreationDateIsFailure() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |CreationDate||
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(null, task.attributes.dueDate)
-    }
-
-    @Test
-    fun dueDateMustBeISODate() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |DueDate|2020-10-01|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(LocalDate.of(2020, 10, 1), task.attributes.dueDate)
-    }
-
-    @Test
-    fun anyOtherDueDateFormatIsFailure() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |DueDate|20201001|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-
-        Assertions.assertThrows(FileFormatException::class.java) {
-            parseTask(content.filename, content.content, fileHandlerMap)
-        }
-    }
-
-    @Test
-    fun emptyDueDateIsFailure() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |DueDate||
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(null, task.attributes.dueDate)
-    }
-
-    @Test
-    fun oneTagValueIsOK() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |Tags|#test1|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(setOf("test1"), task.attributes.tags)
-    }
-
-    @Test
-    fun multipleTagValuesAreOK() {
-        val fileContent = """
-            # Test
-            ## Task
-            ### Properties
-            
-            |Key|Value|
-            |---|-----|
-            |Tags|#test1 #test2|
-        """.trimIndent().replace("\n", System.lineSeparator())
-
-        val content = FileContent(Path.of("Test.md"), fileContent)
-        val task = parseTask(content.filename, content.content, fileHandlerMap)
-
-        Assertions.assertEquals(setOf("test1", "test2"), task.attributes.tags)
-    }
 }

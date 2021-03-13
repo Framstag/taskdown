@@ -11,6 +11,7 @@ import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
@@ -18,6 +19,7 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     private val title by option(help ="Title of the task")
     private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C")
     private val tag by option(help="List of tags to assign to the task").multiple().unique()
+    private val log by option(help="New log description")
     private val due : LocalDate? by option(help="Due date").convert {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
     }
@@ -60,6 +62,10 @@ class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
             due?.let {
                 updatedTask = updatedTask.withAttributes(updatedTask.attributes.withDueDate(it))
             }
+        }
+
+        log?.let {
+            updatedTask = updatedTask.withHistory(updatedTask.history.withLog(LocalDateTime.now(),it))
         }
 
         database.backupTask(updatedTask)

@@ -1,10 +1,10 @@
-package com.framstag.taskdown.database.filehandler
+package com.framstag.taskdown.markdown.filehandler
 
 import com.framstag.taskdown.markdown.AttributeFileHandler
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
-class TagsFileHandler : AttributeFileHandler {
+class TagsHandler : AttributeFileHandler {
     override fun fileValueToAttribute(file: Path, value: String, current: TaskAttributes): TaskAttributes {
         val tags = value.split("#").map {
             it.trim()
