@@ -1,4 +1,4 @@
-package com.framstag.taskdown.database.filehandler
+package com.framstag.taskdown.markdown.filehandler
 
 import com.framstag.taskdown.database.FileFormatException
 import com.framstag.taskdown.markdown.AttributeFileHandler
@@ -8,13 +8,13 @@ import java.nio.file.Path
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DueDateHandler : AttributeFileHandler {
+class CreationDateHandler : AttributeFileHandler {
     override fun fileValueToAttribute(file: Path, value: String, current: TaskAttributes): TaskAttributes {
         try {
             if (value.isNotEmpty()) {
-                val dueDate = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
+                val creationDate = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
 
-                return current.withDueDate(dueDate)
+                return current.withCreationDate(creationDate)
             }
             else {
                 return current
@@ -27,14 +27,14 @@ class DueDateHandler : AttributeFileHandler {
 
     override fun attributeToKeyValue(current: TaskAttributes): Pair<String, String> {
 
-        return if (current.dueDate != null) {
-            Pair(NAME, current.dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
+        return if (current.creationDate != null) {
+            Pair(NAME, current.creationDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
         } else {
             Pair(NAME, "")
         }
     }
 
     companion object {
-        const val NAME = "DueDate"
+        const val NAME = "CreationDate"
     }
 }

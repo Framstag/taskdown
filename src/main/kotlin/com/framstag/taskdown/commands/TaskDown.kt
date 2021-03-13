@@ -4,8 +4,8 @@ import com.framstag.taskdown.config.getConfigPath
 import com.framstag.taskdown.config.loadConfig
 import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.database.NoValidDirectoryException
-import com.framstag.taskdown.database.filehandler.markdownPropertyHandlerMap
-import com.framstag.taskdown.database.filehandler.markdownHistoryHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownPropertyHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownHistoryHandlerMap
 import com.framstag.taskdown.system.PhysicalFileSystem
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.ProgramResult

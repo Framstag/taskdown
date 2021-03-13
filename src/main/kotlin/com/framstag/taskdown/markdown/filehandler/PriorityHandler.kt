@@ -1,4 +1,4 @@
-package com.framstag.taskdown.database.filehandler
+package com.framstag.taskdown.markdown.filehandler
 
 import com.framstag.taskdown.markdown.AttributeFileHandler
 import com.framstag.taskdown.database.FileFormatException

@@ -1,6 +1,6 @@
-package com.framstag.taskdown.database
+package com.framstag.taskdown.markdown.filehandler
 
-import com.framstag.taskdown.database.filehandler.*
+import com.framstag.taskdown.markdown.filehandler.*
 import com.framstag.taskdown.domain.TaskAttributes
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

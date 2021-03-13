@@ -2,8 +2,8 @@ package com.framstag.taskdown.markdown
 
 import com.framstag.taskdown.database.FileContent
 import com.framstag.taskdown.database.FileFormatException
-import com.framstag.taskdown.database.filehandler.markdownPropertyHandlerMap
-import com.framstag.taskdown.database.filehandler.markdownHistoryHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownPropertyHandlerMap
+import com.framstag.taskdown.markdown.filehandler.markdownHistoryHandlerMap
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.TaskLog
 import org.junit.jupiter.api.Assertions

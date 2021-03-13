@@ -1,4 +1,4 @@
-package com.framstag.taskdown.database.filehandler
+package com.framstag.taskdown.markdown.filehandler
 
 import com.framstag.taskdown.domain.TaskHistory
 import com.framstag.taskdown.markdown.HistoryFileEntry
