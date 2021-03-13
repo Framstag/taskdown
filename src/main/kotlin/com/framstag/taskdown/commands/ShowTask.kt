@@ -44,7 +44,7 @@ class ShowTask : CliktCommand(name="show", help="show an existing task") {
                 it.dateTime
             }.forEach {
                 val dateTimeString = it.dateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
-                println("* $dateTimeString: ${it.description}")
+                println("* $dateTimeString: ${t.yellow(it.description)}")
             }
         }
 
