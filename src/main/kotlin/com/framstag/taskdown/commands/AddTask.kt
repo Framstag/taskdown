@@ -4,6 +4,7 @@ import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
+import com.framstag.taskdown.domain.TaskHistory
 import com.framstag.taskdown.system.TaskListFormatter
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
@@ -11,6 +12,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.choice
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class AddTask : CliktCommand(name = "add", help = "Add a new task") {
@@ -22,6 +24,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val due : LocalDate? by option(help="Optional due date").convert {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
     }
+    private val log by option(help="Initial log description")
 
     // Arguments
     private val title by argument(help = "Task title")
@@ -32,6 +35,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         val taskId = Task.getNextFreeTaskId(tasks)
 
         var attributes = TaskAttributes(taskId)
+        var history = TaskHistory()
 
         val parsedPriority = Priority.valueOf(priority)
 
@@ -43,7 +47,11 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
             attributes = attributes.withDueDate(it)
         }
 
-        val task = database.createTask(Task("",title,attributes,""))
+        log?.let {
+            history = history.withLog(LocalDateTime.now(),it)
+        }
+
+        val task = database.createTask(Task("",title,attributes, history, ""))
 
         val formatter = TaskListFormatter()
 

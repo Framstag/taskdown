@@ -3,7 +3,11 @@ package com.framstag.taskdown.markdown
 import com.framstag.taskdown.database.FileFormatException
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
+import com.framstag.taskdown.domain.TaskHistory
 import java.nio.file.Path
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 fun contentToLines(content : String):List<String> {
     return content.split(System.lineSeparator())
@@ -137,6 +141,9 @@ private fun taskSectionToTaskAttributes(
             foundTable = true
             break
         }
+        else if (isHeader3(currentLine) || isHeader2(currentLine) || isHeader1(currentLine)) {
+            break
+        }
     }
 
     if (!foundTable) {
@@ -150,15 +157,15 @@ private fun taskSectionToTaskAttributes(
     currentLine = lineIterator.next()
 
     while (currentLine.isNotEmpty() && currentLine[0]=='|') {
-        val column1Start = 0
-        val column1End = currentLine.indexOf("|", column1Start + 1)
+        val column1Start = 0 + 1
+        val column1End = currentLine.indexOf("|", column1Start)
 
-        val keyName = currentLine.substring(column1Start + 1, column1End).trim()
+        val keyName = currentLine.substring(column1Start, column1End).trim()
 
-        val column2Start = column1End
-        val column2End = currentLine.indexOf("|", column2Start + 1)
+        val column2Start = column1End + 1
+        val column2End = currentLine.indexOf("|", column2Start)
 
-        val value = currentLine.substring(column2Start + 1, column2End).trim()
+        val value = currentLine.substring(column2Start, column2End).trim()
 
         val handler = handlerMap[keyName]
 
@@ -180,14 +187,117 @@ private fun taskSectionToTaskAttributes(
     return attributes
 }
 
-private fun textBlockToTask(taskDocument: TaskDocument, handlerMap: Map<String, AttributeFileHandler>): Task {
-    val title = taskDocument.title
-    val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, handlerMap)
+private fun taskSectionToTaskHistory(
+    filename: Path,
+    section: List<String>,
+    handlerMap: Map<String, HistoryFileHandler>
+): TaskHistory {
+    val lineIterator = section.iterator()
+    var currentLine: String
 
-    return Task(taskDocument.filename.fileName.toString(), title, attributes, taskDocument.body)
+    var history = TaskHistory()
+
+    // Search for properties section
+    var foundHistory = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
+
+        if (isHeader3(currentLine) && extractHeaderValue(currentLine)=="History") {
+            foundHistory = true
+            break
+        }
+    }
+
+    if (!foundHistory) {
+        return history
+    }
+
+    // Search for table start
+    var foundTable = false
+    while (lineIterator.hasNext()) {
+        currentLine = lineIterator.next()
+
+        if (currentLine.isNotEmpty() && currentLine[0]=='|') {
+            foundTable = true
+            break
+        }
+    }
+
+    if (!foundTable) {
+        throw FileFormatException(filename,"Cannot find 'Task' history table")
+    }
+
+    // Skip table header
+
+    if (!lineIterator.hasNext()) {
+        return history
+    }
+
+    lineIterator.next()
+
+    // Skip divider
+
+    if (!lineIterator.hasNext()) {
+        return history
+    }
+
+    currentLine = lineIterator.next()
+
+    while (currentLine.isNotEmpty() && currentLine[0]=='|') {
+        val column1Start = 0 + 1
+        val column1End = currentLine.indexOf("|", column1Start)
+
+        val dateTimeString = currentLine.substring(column1Start, column1End).trim()
+
+        val column2Start = column1End + 1
+        val column2End = currentLine.indexOf("|", column2Start)
+
+        val type = currentLine.substring(column2Start, column2End).trim()
+
+        val column3Start = column2End + 1
+        val column3End = currentLine.indexOf("|", column3Start)
+
+        val value = currentLine.substring(column3Start, column3End).trim()
+
+        val handler = handlerMap[type]
+
+        if (handler != null) {
+            val dateTime = try {
+                LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            }
+            catch (e : DateTimeParseException) {
+                throw FileFormatException(filename,"History date cannot be parsed '$dateTimeString'")
+            }
+
+            val fileEntry = HistoryFileEntry(dateTime,type,value)
+            history = handler.fileEntryToHistory(history, filename, fileEntry)
+        }
+        else {
+            throw FileFormatException(filename,"Unknown task history type '$type'")
+        }
+
+        if (lineIterator.hasNext()) {
+            currentLine = lineIterator.next()
+        }
+        else {
+            break
+        }
+    }
+
+    return history
 }
 
-fun parseTask(filename: Path, fileContent: String, handlerMap: Map<String, AttributeFileHandler>): Task {
+private fun textBlockToTask(taskDocument: TaskDocument, attributeHandlerMap: Map<String, AttributeFileHandler>,
+                            historyHandlerMap: Map<String, HistoryFileHandler>): Task {
+    val title = taskDocument.title
+    val attributes = taskSectionToTaskAttributes(taskDocument.filename, taskDocument.taskDescription, attributeHandlerMap)
+    val history = taskSectionToTaskHistory(taskDocument.filename,taskDocument.taskDescription,historyHandlerMap)
+
+    return Task(taskDocument.filename.fileName.toString(), title, attributes, history, taskDocument.body)
+}
+
+fun parseTask(filename: Path, fileContent: String, attributeHandlerMap: Map<String, AttributeFileHandler>,
+              historyHandlerMap: Map<String, HistoryFileHandler>): Task {
     val textBlock = fileContentToTaskDocument(filename, fileContent)
-    return textBlockToTask(textBlock, handlerMap)
+    return textBlockToTask(textBlock, attributeHandlerMap,historyHandlerMap)
 }

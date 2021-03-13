@@ -9,9 +9,9 @@ class TaskByAgeComparatorTest {
     @Test
     fun compareTwoDates() {
         val dateNow = LocalDate.now()
-        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1).withCreationDate(dateNow),"")
+        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1).withCreationDate(dateNow))
         val dateTomorrow = dateNow.plusDays(1)
-        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2).withCreationDate(dateTomorrow),"")
+        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2).withCreationDate(dateTomorrow))
 
         val comparator = TaskByAgeComparator()
 
@@ -22,8 +22,8 @@ class TaskByAgeComparatorTest {
     @Test
     fun compareOneNull() {
         val dateNow = LocalDate.now()
-        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1).withCreationDate(dateNow),"")
-        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2),"")
+        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1).withCreationDate(dateNow))
+        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2))
 
         val comparator = TaskByAgeComparator()
 
@@ -33,8 +33,8 @@ class TaskByAgeComparatorTest {
 
     @Test
     fun compareBothNull() {
-        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1),"")
-        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2),"")
+        val taskNow = Task("Task1.md","Task 1",TaskAttributes(1))
+        val taskTomorrow = Task("Task2.md","Task 2",TaskAttributes(2))
 
         val comparator = TaskByAgeComparator()
 

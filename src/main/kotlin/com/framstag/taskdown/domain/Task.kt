@@ -23,24 +23,34 @@ class TaskByIdComparator : Comparator<Task> {
     }
 }
 
-data class Task(val filename: String, val title : String, val attributes : TaskAttributes, val body : String) {
-    fun withTitle(title : String):Task {
+data class Task(
+    val filename: String,
+    val title: String,
+    val attributes: TaskAttributes,
+    val history: TaskHistory = TaskHistory(),
+    val body: String = ""
+) {
+    fun withTitle(title: String): Task {
         return this.copy(title = title)
     }
 
-    fun withFilename(filename : String):Task {
+    fun withFilename(filename: String): Task {
         return this.copy(filename = filename)
     }
 
-    fun withAttributes(attributes : TaskAttributes):Task {
+    fun withAttributes(attributes: TaskAttributes): Task {
         return this.copy(attributes = attributes)
     }
 
+    fun withHistory(history: TaskHistory): Task {
+        return this.copy(history = history)
+    }
+
     companion object {
-        fun getNextFreeTaskId(tasks : List<Task>):Int {
+        fun getNextFreeTaskId(tasks: List<Task>): Int {
             val idMap = tasks.associateBy { it.attributes.id }
 
-            var possibleId=1
+            var possibleId = 1
 
             while (idMap.containsKey(possibleId)) {
                 possibleId++

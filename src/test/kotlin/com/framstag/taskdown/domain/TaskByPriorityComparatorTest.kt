@@ -7,8 +7,8 @@ class TaskByPriorityComparatorTest {
 
     @Test
     fun compareAB() {
-        val taskA = Task("Task1.md","Task 1",TaskAttributes(1).withPriority(Priority.A),"")
-        val taskB = Task("Task2.md","Task 2",TaskAttributes(2).withPriority(Priority.B),"")
+        val taskA = Task("Task1.md","Task 1",TaskAttributes(1).withPriority(Priority.A))
+        val taskB = Task("Task2.md","Task 2",TaskAttributes(2).withPriority(Priority.B))
 
         val comparator = TaskByPriorityComparator()
 
@@ -18,8 +18,8 @@ class TaskByPriorityComparatorTest {
 
     @Test
     fun compareAA() {
-        val taskA = Task("Task1.md", "Task 1", TaskAttributes(1).withPriority(Priority.A), "")
-        val taskB = Task("Task2.md", "Task 2", TaskAttributes(2).withPriority(Priority.A), "")
+        val taskA = Task("Task1.md", "Task 1", TaskAttributes(1).withPriority(Priority.A))
+        val taskB = Task("Task2.md", "Task 2", TaskAttributes(2).withPriority(Priority.A))
 
         val comparator = TaskByPriorityComparator()
 
@@ -29,7 +29,7 @@ class TaskByPriorityComparatorTest {
 
     @Test
     fun compareSame() {
-        val taskA = Task("Task1.md", "Task 1", TaskAttributes(1).withPriority(Priority.A), "")
+        val taskA = Task("Task1.md", "Task 1", TaskAttributes(1).withPriority(Priority.A))
 
         val comparator = TaskByPriorityComparator()
 

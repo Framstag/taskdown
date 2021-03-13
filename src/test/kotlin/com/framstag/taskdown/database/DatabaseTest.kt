@@ -26,7 +26,7 @@ class DatabaseTest {
         every {fileSystem.isWritable(archiveDirectory)} returns true
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         database.validate()
 
@@ -52,7 +52,7 @@ class DatabaseTest {
         every {fileSystem.exists(databaseDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -71,7 +71,7 @@ class DatabaseTest {
         every {fileSystem.isDirectory(databaseDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -91,7 +91,7 @@ class DatabaseTest {
         every {fileSystem.isReadable(databaseDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -112,7 +112,7 @@ class DatabaseTest {
         every {fileSystem.isWritable(databaseDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -135,7 +135,7 @@ class DatabaseTest {
         every {fileSystem.exists(archiveDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -159,7 +159,7 @@ class DatabaseTest {
         every {fileSystem.isDirectory(archiveDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -184,7 +184,7 @@ class DatabaseTest {
         every {fileSystem.isReadable(archiveDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()
@@ -210,7 +210,7 @@ class DatabaseTest {
         every {fileSystem.isWritable(archiveDirectory)} returns false
 
         val database =
-            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf())
+            Database(fileSystem, databaseDirectory, archiveDirectory, mapOf(), mapOf())
 
         val exception = Assertions.assertThrows(NoValidDirectoryException::class.java) {
             database.validate()

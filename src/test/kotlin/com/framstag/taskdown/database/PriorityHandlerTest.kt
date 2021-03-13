@@ -1,17 +1,17 @@
 package com.framstag.taskdown.database
 
-import com.framstag.taskdown.database.filehandler.PriorityFileHandler
+import com.framstag.taskdown.database.filehandler.PriorityHandler
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.TaskAttributes
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 
-class FileHandlerTest {
+class PriorityHandlerTest {
 
     @Test
     fun parsePriorityA() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         var attributes = TaskAttributes(1).withPriority(Priority.C)
 
         attributes = handler.fileValueToAttribute(Path.of("test.md"),"A",attributes)
@@ -21,7 +21,7 @@ class FileHandlerTest {
 
     @Test
     fun parsePriorityB() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         var attributes = TaskAttributes(1).withPriority(Priority.A)
 
         attributes = handler.fileValueToAttribute(Path.of("test.md"),"B",attributes)
@@ -31,7 +31,7 @@ class FileHandlerTest {
 
     @Test
     fun parsePriorityC() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         var attributes = TaskAttributes(1).withPriority(Priority.A)
 
         attributes = handler.fileValueToAttribute(Path.of("test.md"),"C",attributes)
@@ -41,7 +41,7 @@ class FileHandlerTest {
 
     @Test
     fun anyOtherPriorityIsFailure() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1).withPriority(Priority.A)
 
         Assertions.assertThrows(FileFormatException::class.java) {
@@ -51,7 +51,7 @@ class FileHandlerTest {
 
     @Test
     fun emptyPriorityIsNotAllowed() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1).withPriority(Priority.A)
 
         Assertions.assertThrows(FileFormatException::class.java) {
@@ -61,7 +61,7 @@ class FileHandlerTest {
 
     @Test
     fun defaultPriorityToValue() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1)
 
         val value = handler.attributeToKeyValue(attributes)
@@ -71,7 +71,7 @@ class FileHandlerTest {
 
     @Test
     fun priorityAToValue() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1).withPriority(Priority.A)
 
         val value = handler.attributeToKeyValue(attributes)
@@ -81,7 +81,7 @@ class FileHandlerTest {
 
     @Test
     fun priorityBToValue() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1).withPriority(Priority.B)
 
         val value = handler.attributeToKeyValue(attributes)
@@ -91,7 +91,7 @@ class FileHandlerTest {
 
     @Test
     fun priorityCToValue() {
-        val handler = PriorityFileHandler()
+        val handler = PriorityHandler()
         val attributes = TaskAttributes(1).withPriority(Priority.C)
 
         val value = handler.attributeToKeyValue(attributes)

@@ -5,7 +5,7 @@ import com.framstag.taskdown.database.FileFormatException
 import com.framstag.taskdown.domain.TaskAttributes
 import java.nio.file.Path
 
-class IdFileHandler : AttributeFileHandler {
+class IdHandler : AttributeFileHandler {
     override fun fileValueToAttribute(file: Path, value: String, current: TaskAttributes): TaskAttributes {
         try {
             val id = Integer.parseInt(value)

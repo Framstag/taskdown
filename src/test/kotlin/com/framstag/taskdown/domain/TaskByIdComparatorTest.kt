@@ -7,8 +7,8 @@ class TaskByIdComparatorTest {
 
     @Test
     fun compare1_2() {
-        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1), "")
-        val task2 = Task("Task2.md", "Task 2", TaskAttributes(2), "")
+        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1))
+        val task2 = Task("Task2.md", "Task 2", TaskAttributes(2))
 
         val comparator = TaskByIdComparator()
 
@@ -18,8 +18,8 @@ class TaskByIdComparatorTest {
 
     @Test
     fun compare1_1() {
-        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1), "")
-        val task2 = Task("Task1.md", "Task 1", TaskAttributes(1), "")
+        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1))
+        val task2 = Task("Task1.md", "Task 1", TaskAttributes(1))
 
         val comparator = TaskByIdComparator()
 
@@ -29,7 +29,7 @@ class TaskByIdComparatorTest {
 
     @Test
     fun compareSame() {
-        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1), "")
+        val task1 = Task("Task1.md", "Task 1", TaskAttributes(1))
 
         val comparator = TaskByIdComparator()
 

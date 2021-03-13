@@ -26,18 +26,20 @@ private fun texBlockToContent(document: TaskDocument): FileContent {
 private fun updateTextBlock(
     document: TaskDocument,
     task: Task,
-    handlerMap: Map<String, AttributeFileHandler>
+    attributeHandlerMap: Map<String, AttributeFileHandler>,
+    historyHandlerMap: Map<String, HistoryFileHandler>
 ): TaskDocument {
     return document
         .withHeader(task.title)
-        .withTaskDescription(attributesToTaskSection(task.attributes, handlerMap))
+        .withTaskDescription(taskToTaskDescription(task,attributeHandlerMap,historyHandlerMap))
 }
 
 class Database(
     private val fileSystem : FileSystem,
     private val databaseDir: Path,
     private val archiveDir: Path,
-    private val handlerMap: Map<String, AttributeFileHandler>
+    private val attributeHandlerMap: Map<String, AttributeFileHandler>,
+    private val historyHandlerMap: Map<String, HistoryFileHandler>
 ) {
     @Throws(NoValidDirectoryException::class)
     private fun validateDirectory(directory : Path) {
@@ -82,7 +84,7 @@ class Database(
         return Result.runCatching {
             loadFromFilenameToFileContent(fileSystem,filename)
         }.mapCatching {
-            parseTask(it.filename,it.content, handlerMap)
+            parseTask(it.filename,it.content, attributeHandlerMap, historyHandlerMap)
         }.getOrThrow()
     }
 
@@ -95,7 +97,7 @@ class Database(
         Result.runCatching {
             TaskDocument(path)
         }.mapCatching {
-            updateTextBlock(it, task, handlerMap)
+            updateTextBlock(it, task, attributeHandlerMap,historyHandlerMap)
         }.mapCatching {
             texBlockToContent(it)
         }.mapCatching {
@@ -130,7 +132,7 @@ class Database(
         }.mapCatching {
             fileContentToTaskDocument(it.filename,it.content)
         }.mapCatching {
-            updateTextBlock(it,task,handlerMap)
+            updateTextBlock(it,task,attributeHandlerMap,historyHandlerMap)
         }.mapCatching {
             texBlockToContent(it)
         }.mapCatching {
