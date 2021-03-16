@@ -58,7 +58,7 @@ private fun historyToHistorySection(
         stringList.add(
             "|${
                 it.dateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            }|Status|${it.value}|"
+            }|${it.key}|${it.value}|"
         )
     }
 
