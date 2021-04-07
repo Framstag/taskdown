@@ -13,6 +13,7 @@ fun main(args: Array<String>) {
             SearchTasks(),
             ShowTags(),
             ListTasks(),
+            LogTask(),
             ShowTask(),
             UpdateTask(),
             UndoTask()
