@@ -6,6 +6,7 @@ import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
 import com.framstag.taskdown.domain.TaskHistory
 import com.framstag.taskdown.system.TaskListFormatter
+import com.framstag.taskdown.system.callEditorForFile
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -25,9 +26,25 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
     }
     private val log by option(help="Initial log description")
+    private val edit by option("--edit", "-e", help="edit task after creation").flag()
 
     // Arguments
     private val title by argument(help = "Task title")
+
+    private fun editTask(task : Task) {
+        val filenamePath = database.getPathForActiveTask(task)
+
+        if (callEditorForFile(filenamePath)) {
+            val reloadedTask = database.reloadTask(task)
+
+            val formatter = TaskListFormatter()
+
+            println(formatter.format(reloadedTask))
+        }
+        else {
+            System.err.println("ERROR: Error while calling external editor")
+        }
+    }
 
     override fun run() {
         val tasks = database.loadTasks().sortedBy { it.attributes.id }
@@ -56,5 +73,9 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
         val formatter = TaskListFormatter()
 
         println(formatter.format(task))
+
+        if (edit) {
+            editTask(task)
+        }
     }
 }
