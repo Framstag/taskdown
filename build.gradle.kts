@@ -1,11 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.21"
+    id("org.jetbrains.kotlin.jvm") version "1.5.31"
 
     application
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 // compile bytecode to java 8 (default is java 6)
@@ -25,11 +25,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Logging
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.4")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
 
     // Command line parsing
-    implementation("com.github.ajalt.clikt:clikt-jvm:3.1.0")
+    implementation("com.github.ajalt.clikt:clikt-jvm:3.2.0")
 
     // Terminal colors
     implementation("com.github.ajalt:mordant:1.2.1")
@@ -37,18 +37,18 @@ dependencies {
 
     // JSON Config file loading
     //    See: https://github.com/cbeust/klaxon
-    implementation("com.beust:klaxon:5.4")
+    implementation("com.beust:klaxon:5.5")
 
     // Kotlin JUnit Tests
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
     // JUnit 5
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
     // Mockk Mock-Framework
-    testImplementation("io.mockk:mockk:1.10.6")
+    testImplementation("io.mockk:mockk:1.12.0")
 }
 
 tasks.test {
