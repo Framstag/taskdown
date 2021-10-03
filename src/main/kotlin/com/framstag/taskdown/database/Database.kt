@@ -170,7 +170,7 @@ class Database(
 
     fun loadTasks(): List<Task> {
         val fileNames = databaseDir.toFile().list { _, name ->
-            name.toLowerCase().endsWith(".md")
+            name.lowercase().endsWith(".md")
         }
 
         if (fileNames == null) {

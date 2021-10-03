@@ -20,8 +20,8 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val database by requireObject<Database>()
 
     // Options
-    private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C").default("C")
-    private val tag by option(help="List of tags to assign to the task").multiple().unique()
+    private val priority by option("--priority", "-p", help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C").default("C")
+    private val tag by option("--tag", "-t", help="List of tags to assign to the task").multiple().unique()
     private val due : LocalDate? by option(help="Optional due date").convert {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
     }

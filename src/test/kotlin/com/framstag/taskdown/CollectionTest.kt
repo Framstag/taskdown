@@ -15,7 +15,7 @@ class CollectionTest {
                     throw Exception("Zwei ist nicht erlaubt")
                 }
                 else {
-                    it.toUpperCase()
+                    it.uppercase()
                 }
             }
         }
@@ -32,7 +32,7 @@ class CollectionTest {
                 null
             }
             else {
-                it.toUpperCase()
+                it.uppercase()
             }
         }
 
@@ -49,7 +49,7 @@ class CollectionTest {
                 Result.failure(exception)
             }
             else {
-                Result.success(it.toUpperCase())
+                Result.success(it.uppercase())
             }
         }.partition {
             it.isSuccess

@@ -17,9 +17,9 @@ import java.time.format.DateTimeFormatter
 class UpdateTask : CliktCommand(name="update", help="Update an existing task") {
     // Options
     private val title by option(help ="Title of the task")
-    private val priority by option(help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C")
-    private val tag by option(help="List of tags to assign to the task").multiple().unique()
-    private val log by option(help="New log description")
+    private val priority by option("--priority", "-p", help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C")
+    private val tag by option("--tag", "-t", help="List of tags to assign to the task").multiple().unique()
+    private val log by option("--log", "-l", help="New log description")
     private val due : LocalDate? by option(help="Due date").convert {
         LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE)
     }
