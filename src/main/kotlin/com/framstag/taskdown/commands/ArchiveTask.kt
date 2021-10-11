@@ -9,16 +9,16 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import java.time.LocalDateTime
 
-class ArchiveTask : CliktCommand(name = "archive", help = "Archive a task") {
+class ArchiveTask : CliktCommand(name = "archive", help = "Archive a task", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
+
     // Options
     private val log by option(help="New log description")
 
     // Arguments
     private val id : Int by argument(help="Id of the task").int()
 
-    private val database by requireObject<Database>()
-
-    private fun updateTask(task : Task): Task {
+    private fun updateTask(database : Database, task : Task): Task {
         var updatedTask = task
 
         log?.let {
@@ -30,7 +30,7 @@ class ArchiveTask : CliktCommand(name = "archive", help = "Archive a task") {
         return database.updateTask(updatedTask)
     }
     override fun run() {
-        val taskMap = database.loadTasks().associateBy {
+        val taskMap = context.database.loadTasks().associateBy {
             it.attributes.id
         }
 
@@ -39,8 +39,8 @@ class ArchiveTask : CliktCommand(name = "archive", help = "Archive a task") {
             return
         }
 
-        val updatedTask = updateTask(task)
+        val updatedTask = updateTask(context.database,task)
 
-        database.archiveTask(updatedTask)
+        context.database.archiveTask(updatedTask)
     }
 }

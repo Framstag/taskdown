@@ -1,6 +1,5 @@
 package com.framstag.taskdown.commands
 
-import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.TaskByAgeComparator
 import com.framstag.taskdown.domain.TaskByIdComparator
 import com.framstag.taskdown.domain.TaskByPriorityComparator
@@ -12,14 +11,14 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
 import com.github.ajalt.clikt.parameters.types.choice
 
-class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
-    private val database by requireObject<Database>()
+class ListTasks : CliktCommand(name = "list", help = "List existing tasks", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
 
     private val tag by option("--tag", "-t", help = "Tags to filter the tasks").multiple().unique()
     private val priority by option("--priority", "-p", help = "Priority to filter the tasks").choice("A", "B", "C").multiple().unique()
 
     override fun run() {
-        var tasks = database.loadTasks()
+        var tasks = context.database.loadTasks()
 
         tag.forEach { tag ->
             tasks = tasks.filter { task ->
@@ -42,7 +41,7 @@ class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
         val formatter = TaskListFormatter()
 
         tasks.forEach { task ->
-            println(formatter.format(task))
+            context.t.println(formatter.format(task))
         }
     }
 }

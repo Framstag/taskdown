@@ -1,6 +1,5 @@
 package com.framstag.taskdown.commands
 
-import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.Task
 import com.framstag.taskdown.domain.TaskAttributes
@@ -16,8 +15,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AddTask : CliktCommand(name = "add", help = "Add a new task") {
-    private val database by requireObject<Database>()
+class AddTask : CliktCommand(name = "add", help = "Add a new task", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
 
     // Options
     private val priority by option("--priority", "-p", help = "Priority of the task, either 'A', 'B' or 'C'").choice("A", "B", "C").default("C")
@@ -32,14 +31,14 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     private val title by argument(help = "Task title")
 
     private fun editTask(task : Task) {
-        val filenamePath = database.getPathForActiveTask(task)
+        val filenamePath = context.database.getPathForActiveTask(task)
 
         if (callEditorForFile(filenamePath)) {
-            val reloadedTask = database.reloadTask(task)
+            val reloadedTask = context.database.reloadTask(task)
 
             val formatter = TaskListFormatter()
 
-            println(formatter.format(reloadedTask))
+            context.t.println(formatter.format(reloadedTask))
         }
         else {
             System.err.println("ERROR: Error while calling external editor")
@@ -47,7 +46,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
     }
 
     override fun run() {
-        val tasks = database.loadTasks().sortedBy { it.attributes.id }
+        val tasks = context.database.loadTasks().sortedBy { it.attributes.id }
 
         val taskId = Task.getNextFreeTaskId(tasks)
 
@@ -68,7 +67,7 @@ class AddTask : CliktCommand(name = "add", help = "Add a new task") {
             history = history.withLog(LocalDateTime.now(),it)
         }
 
-        val task = database.createTask(Task("",title,attributes, history, ""))
+        val task = context.database.createTask(Task("",title,attributes, history, ""))
 
         val formatter = TaskListFormatter()
 

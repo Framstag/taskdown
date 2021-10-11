@@ -9,19 +9,14 @@ import com.framstag.taskdown.markdown.filehandler.markdownHistoryHandlerMap
 import com.framstag.taskdown.system.PhysicalFileSystem
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.ProgramResult
-import com.github.ajalt.clikt.core.findOrSetObject
+import com.github.ajalt.clikt.core.context
+import com.github.ajalt.clikt.output.CliktHelpFormatter
+import com.github.ajalt.mordant.terminal.Terminal
 import java.nio.file.Path
 
-class TaskDown : CliktCommand(name = "taskdown") {
-    private val config by findOrSetObject { loadConfig(getConfigPath()) }
-    private val database by findOrSetObject {
-        Database(
-            PhysicalFileSystem(),
-            Path.of(config.databaseDir),
-            Path.of(config.archiveDir),
-            markdownPropertyHandlerMap,
-            markdownHistoryHandlerMap
-        )
+class TaskDown : CliktCommand(name = "taskdown", printHelpOnEmptyArgs = true) {
+    init {
+        context { helpFormatter = CliktHelpFormatter(showDefaultValues = true, requiredOptionMarker ="*") }
     }
 
     override fun aliases(): Map<String, List<String>> {
@@ -39,7 +34,17 @@ class TaskDown : CliktCommand(name = "taskdown") {
 
     override fun run() {
         try {
+            val config = loadConfig(getConfigPath())
+            val database = Database(
+                PhysicalFileSystem(),
+                Path.of(config.databaseDir),
+                Path.of(config.archiveDir),
+                markdownPropertyHandlerMap,
+                markdownHistoryHandlerMap
+            )
+
             database.validate()
+            currentContext.findOrSetObject { Context(config,database, Terminal()) }
         } catch (e: NoValidDirectoryException) {
             System.err.println("ERROR: ${e.message}")
 

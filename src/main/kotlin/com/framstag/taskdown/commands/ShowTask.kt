@@ -1,59 +1,61 @@
 package com.framstag.taskdown.commands
 
-import com.framstag.taskdown.database.Database
 import com.framstag.taskdown.domain.Task
+import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.rendering.TextColors.*
+import com.github.ajalt.mordant.rendering.TextStyles.*
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.mordant.TermColors
+import com.github.ajalt.mordant.markdown.Markdown
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
-class ShowTask : CliktCommand(name="show", help="show an existing task") {
+class ShowTask : CliktCommand(name="show", help="show an existing task", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
+
     // Arguments
     private val id : Int by argument(help="Id of the task").int()
 
-    private val database by requireObject<Database>()
-
     private fun showTask(task : Task) {
-        val t = TermColors()
+        val t = Terminal()
 
-        println(t.red(t.bold("# ${task.title}")))
-        println()
-        println("Id:       ${t.yellow(task.attributes.id.toString())}")
-        println("Priority: ${t.yellow(task.attributes.priority.toString())}")
+        t.println(red(bold("# ${task.title}")))
+        t.println()
+        t.println("Id:       ${yellow(task.attributes.id.toString())}")
+        t.println("Priority: ${yellow(task.attributes.priority.toString())}")
 
         task.attributes.creationDate?.let {
-            println("Creation: ${t.yellow(it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
+            t.println("Creation: ${yellow(it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
         }
 
         task.attributes.dueDate?.let {
-            println("Due:      ${t.yellow(it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
+            t.println("Due:      ${yellow(it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))}")
         }
 
-        println("Tags:     ${t.yellow(task.attributes.tagString())}")
-        println()
+        t.println("Tags:     ${yellow(task.attributes.tagString())}")
+        t.println()
 
         if (task.history.logs.isNotEmpty()) {
-            println("Logs:")
-            println()
+            t.println("Logs:")
+            t.println()
 
             task.history.logs.sortedBy {
                 it.dateTime
             }.forEach {
                 val dateTimeString = it.dateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
-                println("* $dateTimeString: ${t.yellow(it.description)}")
+                t.println("* $dateTimeString: ${yellow(it.description)}")
             }
         }
 
-        println(task.body)
+        val widget = Markdown(task.body)
+        t.println(widget)
     }
 
     override fun run() {
-
-        val taskMap = database.loadTasks().associateBy {
+        val taskMap = context.database.loadTasks().associateBy {
             it.attributes.id
         }
 
@@ -65,5 +67,4 @@ class ShowTask : CliktCommand(name="show", help="show an existing task") {
 
         showTask(task)
     }
-
 }

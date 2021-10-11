@@ -32,7 +32,7 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt-jvm:3.2.0")
 
     // Terminal colors
-    implementation("com.github.ajalt:mordant:1.2.1")
+    implementation("com.github.ajalt.mordant:mordant-jvm:2.0.0-beta2")
 
 
     // JSON Config file loading

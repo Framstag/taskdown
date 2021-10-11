@@ -7,18 +7,19 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.mordant.terminal.Terminal
 import java.time.LocalDateTime
 
-class LogTask : CliktCommand(name="log", help="Add log entry to existing task") {
+class LogTask : CliktCommand(name="log", help="Add log entry to existing task", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
+
     // Options
 
     // Arguments
     private val id : Int by argument(help="Id of the task").int()
     private val log : String by argument(help="Log entry")
 
-    private val database by requireObject<Database>()
-
-    private fun updateTask(task : Task):Task {
+    private fun updateTask(database : Database, task : Task):Task {
         var updatedTask = task
 
         log.let {
@@ -31,7 +32,7 @@ class LogTask : CliktCommand(name="log", help="Add log entry to existing task") 
     }
 
     override fun run() {
-        val taskMap = database.loadTasks().associateBy {
+        val taskMap = context.database.loadTasks().associateBy {
             it.attributes.id
         }
 
@@ -41,10 +42,11 @@ class LogTask : CliktCommand(name="log", help="Add log entry to existing task") 
             return
         }
 
-        val updatedTask = updateTask(task)
+        val updatedTask = updateTask(context.database, task)
 
+        val t = Terminal()
         val formatter = TaskListFormatter()
 
-        println(formatter.format(updatedTask))
+        t.println(formatter.format(updatedTask))
     }
 }

@@ -8,22 +8,24 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.mordant.terminal.Terminal
 
-class EditTask : CliktCommand(name="edit", help="edit an existing task") {
+class EditTask : CliktCommand(name="edit", help="edit an existing task", printHelpOnEmptyArgs = true) {
+    private val context by requireObject<Context>()
+
     // Arguments
     private val id : Int by argument(help="Id of the task").int()
 
-    private val database by requireObject<Database>()
-
-    private fun editTask(task : Task) {
+    private fun editTask(database : Database, task : Task) {
         val filenamePath = database.getPathForActiveTask(task)
 
         if (callEditorForFile(filenamePath)) {
             val reloadedTask = database.reloadTask(task)
 
+            val t = Terminal()
             val formatter = TaskListFormatter()
 
-            println(formatter.format(reloadedTask))
+            t.println(formatter.format(reloadedTask))
         }
         else {
             System.err.println("ERROR: Error while calling external editor")
@@ -31,7 +33,7 @@ class EditTask : CliktCommand(name="edit", help="edit an existing task") {
     }
 
     override fun run() {
-        val taskMap = database.loadTasks().associateBy {
+        val taskMap = context.database.loadTasks().associateBy {
             it.attributes.id
         }
 
@@ -41,7 +43,7 @@ class EditTask : CliktCommand(name="edit", help="edit an existing task") {
             return
         }
 
-        editTask(task)
+        editTask(context.database, task)
     }
 
 }

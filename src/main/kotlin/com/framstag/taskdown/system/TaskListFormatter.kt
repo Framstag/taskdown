@@ -2,14 +2,14 @@ package com.framstag.taskdown.system
 
 import com.framstag.taskdown.domain.Priority
 import com.framstag.taskdown.domain.Task
-import com.github.ajalt.mordant.TermColors
+import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.rendering.TextColors.*
+import com.github.ajalt.mordant.rendering.TextStyles.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class TaskListFormatter {
     fun format(task: Task):String {
-        val t = TermColors()
-
         val today = LocalDate.now()
 
         val creationDays = if (task.attributes.creationDate != null) {
@@ -19,21 +19,21 @@ class TaskListFormatter {
             0
         }
 
-        val idString = t.bold(ID_FORMAT.format(task.attributes.id))
+        val idString = bold(ID_FORMAT.format(task.attributes.id))
         val priorityString = PRIORITY_FORMAT.format(task.attributes.priority)
         val creationDateString = CREATION_DATE_FORMAT.format(creationDays)
         val titleString = TITLE_FORMAT.format(task.title)
-        val tagString = t.gray(TAG_FORMAT.format(task.attributes.tagString()))
+        val tagString = gray(TAG_FORMAT.format(task.attributes.tagString()))
 
         val coloredPriorityString = when (task.attributes.priority) {
-            Priority.A -> t.bold(t.red(priorityString))
-            Priority.B -> t.yellow(priorityString)
+            Priority.A -> bold(red(priorityString))
+            Priority.B -> yellow(priorityString)
             else -> priorityString
         }
 
         val coloredTitleString = when (task.attributes.priority) {
-            Priority.A -> t.bold(t.red(titleString))
-            Priority.B -> t.yellow(titleString)
+            Priority.A -> bold(red(titleString))
+            Priority.B -> yellow(titleString)
             else -> titleString
         }
 
@@ -43,13 +43,13 @@ class TaskListFormatter {
 
                 when {
                     task.attributes.dueDate.isEqual(today) -> {
-                        t.red(dueDateString)
+                        red(dueDateString)
                     }
                     task.attributes.dueDate.isBefore(today) -> {
-                        t.bold(t.red(dueDateString))
+                        bold(red(dueDateString))
                     }
                     else -> {
-                        t.gray(dueDateString)
+                        gray(dueDateString)
                     }
                 }
             } else {
