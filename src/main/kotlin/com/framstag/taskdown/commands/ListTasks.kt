@@ -11,7 +11,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.unique
 import com.github.ajalt.clikt.parameters.types.choice
 
-class ListTasks : CliktCommand(name = "list", help = "List existing tasks", printHelpOnEmptyArgs = true) {
+class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
     private val context by requireObject<Context>()
 
     private val tag by option("--tag", "-t", help = "Tags to filter the tasks").multiple().unique()

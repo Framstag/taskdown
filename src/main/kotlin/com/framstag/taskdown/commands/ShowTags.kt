@@ -3,7 +3,7 @@ package com.framstag.taskdown.commands
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 
-class ShowTags : CliktCommand(name="tags", help="List all tags", printHelpOnEmptyArgs = true) {
+class ShowTags : CliktCommand(name="tags", help="List all tags") {
     private val context by requireObject<Context>()
 
     override fun run() {
