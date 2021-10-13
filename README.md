@@ -41,11 +41,6 @@ Everything else is missing:
 * Statistics
 * ...
 
-## Future
-
-Further progress depends on me getting thing done in a better
-way than before.
-
 ## Build
 
 ```bash
@@ -117,7 +112,8 @@ A task has the following principle attributes:
 ## Walk through example
 
 (We are using the td.sh script to call taskdown under Linux for the following
-examples)
+examples. Normally you also get nice coloring of the output if the terminal supports it.
+This is not shown in the examples)
 
 Show the empty database:
 
@@ -240,6 +236,11 @@ Archive the other task, to remove it from the list of open tasks:
 ./td.sh l
   1 B              0 My first task 
 ```
+
+## Future
+
+Further progress depends on me getting thing done in a better
+way than before.
 
 ## License
 
