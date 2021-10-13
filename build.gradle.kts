@@ -8,14 +8,14 @@ repositories {
     mavenCentral()
 }
 
-// compile bytecode to java 8 (default is java 6)
+// compile bytecode to java 17
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_15.toString()
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_15.toString()
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
 
