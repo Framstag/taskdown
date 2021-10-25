@@ -61,6 +61,12 @@
         <!-- Terminal colors -->
 
         <dependency>
+            <groupId>io.github.alexarchambault.windows-ansi</groupId>
+            <artifactId>windows-ansi</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.ajalt.mordant</groupId>
             <artifactId>mordant-jvm</artifactId>
             <version>2.0.0-beta2</version>
