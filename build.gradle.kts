@@ -31,6 +31,7 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt-jvm:3.2.0")
 
     // Terminal colors
+    implementation("io.github.alexarchambault.windows-ansi:windows-ansi:0.0.3")
     implementation("com.github.ajalt.mordant:mordant-jvm:2.0.0-beta2")
 
 
