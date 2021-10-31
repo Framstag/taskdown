@@ -36,8 +36,8 @@ dependencies {
 
 
     // JSON Config file loading
-    //    See: https://github.com/cbeust/klaxon
-    implementation("com.beust:klaxon:5.5")
+    //    See: https://github.com/square/moshi
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 
     // Kotlin JUnit Tests
     testImplementation("org.jetbrains.kotlin:kotlin-test")
