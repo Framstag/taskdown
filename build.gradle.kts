@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
 
     application
 }
@@ -28,7 +28,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.6")
 
     // Command line parsing
-    implementation("com.github.ajalt.clikt:clikt-jvm:3.2.0")
+    implementation("com.github.ajalt.clikt:clikt-jvm:3.3.0")
 
     // Terminal colors
     implementation("io.github.alexarchambault.windows-ansi:windows-ansi:0.0.3")
@@ -37,15 +37,15 @@ dependencies {
 
     // JSON Config file loading
     //    See: https://github.com/square/moshi
-    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.1")
 
     // Kotlin JUnit Tests
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
     // JUnit 5
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
     // Mockk Mock-Framework
     testImplementation("io.mockk:mockk:1.12.0")
