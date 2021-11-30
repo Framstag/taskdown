@@ -37,7 +37,7 @@ dependencies {
 
     // JSON Config file loading
     //    See: https://github.com/square/moshi
-    implementation("com.squareup.moshi:moshi-kotlin:1.12.1")
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 
     // Kotlin JUnit Tests
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -48,7 +48,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
     // Mockk Mock-Framework
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.12.1")
 }
 
 tasks.test {
