@@ -4,6 +4,7 @@ import com.framstag.taskdown.domain.TaskByAgeComparator
 import com.framstag.taskdown.domain.TaskByIdComparator
 import com.framstag.taskdown.domain.TaskByPriorityComparator
 import com.framstag.taskdown.system.TaskListFormatter
+import com.framstag.taskdown.system.performanceDebugger
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.multiple
@@ -18,7 +19,9 @@ class ListTasks : CliktCommand(name = "list", help = "List existing tasks") {
     private val priority by option("--priority", "-p", help = "Priority to filter the tasks").choice("A", "B", "C").multiple().unique()
 
     override fun run() {
+        performanceDebugger.step("Loading tasks...")
         var tasks = context.database.loadTasks()
+        performanceDebugger.step("Loading tasks... done")
 
         tag.forEach { tag ->
             tasks = tasks.filter { task ->
