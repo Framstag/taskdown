@@ -1,4 +1,4 @@
-name: Ubuntu Latest using JDK 16 and Gradle
+name: Ubuntu Latest using JDK 17 and Gradle
 
 on:
   pull_request:
@@ -15,9 +15,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up JDK 16
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 16
+          java-version: 17
       - name: Build with gradle
         run:  ./gradlew build
